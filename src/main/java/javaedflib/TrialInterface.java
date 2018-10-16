@@ -5,6 +5,8 @@
  */
 package javaedflib;
 
+import javaedflib.Layouts.BIOSEMI_ABC_128_MAPPING;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,7 +24,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 //import electrode.BIOSEMI_ABC_128_MAPPING;
-import java.io.InputStream;
+
 //import streamingeegexperiment.EEGData;
 //import streamingeegexperiment.FIRFilter;
 //import streamingeegexperiment.FIRFilterGPU;
@@ -233,7 +235,7 @@ public class TrialInterface {
             } else if (fileFormat == FileFormatType.BDF) {
                 return header.getSignalLabel();
             } else if (fileFormat == FileFormatType.CSV) {
-                Set<String> labels = new BIOSEMI_ABC_128_MAPPING().keySet(); 
+                Set<String> labels = new BIOSEMI_ABC_128_MAPPING().keySet();
                 List<String> l = new ArrayList<>(labels);
                 Collections.sort(l, new Comparator<String>(){
                     @Override
