@@ -19,7 +19,6 @@ public class EDFReader {
         try {
             TrialInterface source = new TrialInterface();
             String path = System.getProperty("user.dir") + "\\src\\main\\test_generator.edf";
-            System.out.println(path);
             source.setInput(new File(path));
             
             Header header = source.getHeader();
