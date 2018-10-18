@@ -21,7 +21,7 @@ import static javaedflib.TrialInterface.*;
  */
 public class Header{
     
-    /// fields holding the EDF/BDF header content
+    /// fields holding the EDF/BDF header content ->
     //==========================================================
     /** EDF/BDF Identification code */
     protected String version;
