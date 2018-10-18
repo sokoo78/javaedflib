@@ -4,9 +4,13 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 
 public class BinFile {
-    private String path;
+    private java.lang.String path;
 
-    public byte[] ReadBytes (int offset, int length) {
+    BinFile(String path) {
+        this.path = path;
+    }
+
+    byte[] ReadBytes(int offset, int length) {
         byte[] bytes = new byte[length];
         try (FileInputStream fis = new FileInputStream(path);
              BufferedInputStream bis = new BufferedInputStream(fis)
@@ -19,11 +23,11 @@ public class BinFile {
         return bytes;
     }
 
-    public String getPath() {
+    public java.lang.String getPath() {
         return path;
     }
 
-    public void setPath(String path) {
+    void setPath(java.lang.String path) {
         this.path = path;
     }
 }

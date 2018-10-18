@@ -1,4 +1,5 @@
 package javaedflib;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -24,38 +25,38 @@ public class Header{
     /// fields holding the EDF/BDF header content ->
     //==========================================================
     /** EDF/BDF Identification code */
-    protected String version;
+    private String version;
     /** EDF/BDF Local subject identification (80 chars)*/
-    protected String patientInfo;
+    private String patientInfo;
     /** EDF/BDF Local recording identification (80 chars)*/
-    protected String recordingInfo;
+    private String recordingInfo;
     /** EDF/BDF Start date of recording */
-    protected String startDate;
+    private String startDate;
     /** EDF/BDF Start time of recording */
-    protected String startTime;
+    private String startTime;
     /** EDF/BDF Number of bytes in header (N+1)*256 where N is the number of channels*/
-    protected int headerSize;
+    private int headerSize;
     /** Reserved in EDF, Version of data format ("BIOSEMI" vs "24BIT") in BDF. */
-    protected String reserved;
+    private String reserved;
     /** EDF/BDF Number of data records "-1" if unknown */
-    protected int numberOfDataRecords;
+    private int numberOfDataRecords;
     /** EDF/BDF Duration of a data record, in seconds or in nanoseconds? CHECK*/
-    protected long durationOfDataRecords;//duration in nanoseconds
+    private long durationOfDataRecords;//duration in nanoseconds
     /** EDF/BDF Number of channels (N) in data record */
-    protected int numberOfSignals;
+    private int numberOfSignals;
     
-    //// fileds for internal processign and representation
+    //// fields for internal processing and representation
     //=========================================================
-    protected int dataOffset;   //file position of the first data record
-    protected long totalSamplesInDataRecord;
-    protected static final int NANOSEC = 1000000000;
-    protected String[] signalLabels;
+    private int dataOffset;   //file position of the first data record
+    private long totalSamplesInDataRecord;
+    private static final int NANOSEC = 1000000000;
+    private String[] signalLabels;
 
-    private String fileName = null;
-    protected RandomAccessFile inputFile = null;
-    private Calendar start = null;
-    private byte[] unprocessedHeader = new byte[256];
-    private String[] ChannelLabel=null;
+    //private String fileName = null;
+    private RandomAccessFile inputFile;
+    //private Calendar start = null;
+    //private byte[] unprocessedHeader = new byte[256];
+    //private String[] ChannelLabel=null;
   //  private SignalHeader[] signalHeaders = null;
 //    private long[] signalDataOffsetInRecord = null;
     
@@ -63,13 +64,13 @@ public class Header{
 
     
     /** main table holding all the signals in the file as (channel label, Header) key-value pairs */
-    protected Map<String, SignalHeader> signalHeaders; 
+    private Map<String, SignalHeader> signalHeaders;
     
-    // specific map for signal groups. This is the key entry point for finding specific signel lists (eg EEG or ECG signals)
-    protected Map<SignalHeader.SIGNAL_TYPES, List<SignalHeader>> signalMap; 
-    protected Map<String, SignalHeader> triggerHeaders; 
+    // specific map for signal groups. This is the key entry point for finding specific signal lists (eg EEG or ECG signals)
+    private Map<SignalHeader.SIGNAL_TYPES, List<SignalHeader>> signalMap;
+    private Map<String, SignalHeader> triggerHeaders;
     
-    FileFormatType fileFormat;
+    private FileFormatType fileFormat;
     private int DATA_SIZE;  // 2 (bytes) for EDF, 3 (bytes) for BDF
     private boolean edgeFound;
     private int sampleRate;
@@ -85,7 +86,7 @@ public class Header{
      * @param inputFile
      * @return 
      */
-    public static Header create(RandomAccessFile inputFile, FileFormatType format) {
+    static Header create(RandomAccessFile inputFile, FileFormatType format) {
         
         if (inputFile == null){
             throw new IllegalArgumentException("Input data file is null");
@@ -96,8 +97,8 @@ public class Header{
          8 ascii : version of this data format (0)
          80 ascii : local patient identification
          80 ascii : local recording identification
-         8 ascii : startdate of recording (dd.mm.yy)
-         8 ascii : starttime of recording (hh.mm.ss)
+         8 ascii : start date of recording (dd.mm.yy)
+         8 ascii : start time of recording (hh.mm.ss)
          8 ascii : number of bytes in header record
          44 ascii : reserved
          8 ascii : number of data records (-1 if unknown)
@@ -150,17 +151,13 @@ public class Header{
                     new String(recordingInfo).trim(),
                     new String(startDate).trim(),
                     new String(startTime).trim(),
-                    new Integer(new String(headerSize).trim()).intValue(),
+                    Integer.valueOf(new String(headerSize).trim()),
                     new String(reserved).trim(),
-                    new Integer(new String(numberOfDataRecords).trim()).intValue(),
-                    new Float(new String(durationOfDataRecords).trim()).floatValue(),
-                    new Integer(new String(numberOfSignals).trim()).intValue()
+                    Integer.valueOf(new String(numberOfDataRecords).trim()),
+                    Float.valueOf(new String(durationOfDataRecords).trim()),
+                    Integer.valueOf(new String(numberOfSignals).trim())
             );
-        } catch (IOException ex) {
-            Logger.getLogger(Header.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (BufferUnderflowException ex) {
-            Logger.getLogger(Header.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IndexOutOfBoundsException ex) {
+        } catch (IOException | BufferUnderflowException | IndexOutOfBoundsException ex) {
             Logger.getLogger(Header.class.getName()).log(Level.SEVERE, null, ex);
         }
         buffer.clear();
@@ -185,7 +182,7 @@ public class Header{
         }
         if (encodingType == 255){
             this.encoding = FileFormatType.BDF; 
-        }else if (Character.valueOf((char)encodingType) == '0'){
+        }else if ((char) encodingType == '0'){
             this.encoding = FileFormatType.EDF;
         }
             
@@ -201,8 +198,8 @@ public class Header{
         this.numberOfSignals = numberOfSignals;
         
         this.dataOffset=256+256*numberOfSignals;
-        this.signalHeaders = new HashMap<String, SignalHeader>();
-        this.triggerHeaders = new HashMap<String, SignalHeader>();
+        this.signalHeaders = new HashMap<>();
+        this.triggerHeaders = new HashMap<>();
         // create and store signal headers 
         this.signalLabels = new String[numberOfSignals];
         recordSize = 0;
@@ -221,14 +218,13 @@ public class Header{
                 list.add(signalHeader);
                 signalMap.put(sigType, list);
             }
-            
-            if (signalHeader != null) {
-                String label = signalHeader.getLabel();
-                
-                // find largest samples per second value for display sample rate 
-                if (signalHeader.getNumberOfSamples() > sampleRate)
-                    sampleRate = (int)signalHeader.getNumberOfSamples();
-                
+
+            String label = signalHeader.getLabel();
+
+            // find largest samples per second value for display sample rate
+            if (signalHeader.getNumberOfSamples() > sampleRate)
+                sampleRate = (int)signalHeader.getNumberOfSamples();
+
 //                System.out.println(i + " -- " + label);
 //                if (format == FileFormatType.EDF || format == FileFormatType.EDF_PLUS){
 //                    if (label.equals("EDF Annotations"))
@@ -238,22 +234,21 @@ public class Header{
 //                    if (label.equals("BDF Annotations"))
 //                        System.out.println("Annotation");
 //                }
-//                
+//
 //                if (label.equals("Status"))
 //                    System.out.println("Status");
-                signalHeader.setSignalDataOffset(totalSamplesInDataRecord * DATA_SIZE);
-                totalSamplesInDataRecord += signalHeader.getNumberOfSamples();
-                // compute the length of the full data record including all channels in bytes
-                recordSize += signalHeader.getNumberOfSamples() * DATA_SIZE;
+            signalHeader.setSignalDataOffset(totalSamplesInDataRecord * DATA_SIZE);
+            totalSamplesInDataRecord += signalHeader.getNumberOfSamples();
+            // compute the length of the full data record including all channels in bytes
+            recordSize += signalHeader.getNumberOfSamples() * DATA_SIZE;
 
 //                if (label.startsWith("EX")){
 //                    continue;
 //                }else if (label.toLowerCase().startsWith("status")){
 //                    triggerHeaders.put(label, signalHeader);
 //                }
-                signalHeaders.put(label, signalHeader);             
-                signalLabels[i]=label;
-            }
+            signalHeaders.put(label, signalHeader);
+            signalLabels[i]=label;
         }
         // compute and store data record length (offset)
     }
@@ -313,7 +308,7 @@ public class Header{
 //        return 256 + numberOfSignals * 256;
 //    }
     
-    public float[][] readSegment() throws IOException{
+    float[][] readSegment() throws IOException{
         if (inputFile == null)
             throw new IllegalStateException();
         
@@ -333,7 +328,7 @@ public class Header{
         byte[] byteBuffer = new byte[sampleSize * recordLength];
                         
         // start reading the data record for the channels
-        int count = -1;
+        int count;
         String[] labels = getSignalLabel();
         // prepare output array
         float[][] segment = new float[labels.length][];   // add samples later
@@ -342,14 +337,15 @@ public class Header{
             String label = labels[i];
              
             count = inputFile.read(byteBuffer);
-            if (count == -1){
+            if (count != -1) {
+                // convert segment to float array
+                float[] data = convert(byteBuffer, recordLength, fileFormat, getSignalHeaders().get(label));
+                // add to segment array
+                segment[i] = data;
+            } else {
                 segment = null;
-                break;           
+                break;
             }
-            // convert segment to float array
-            float[] data = convert(byteBuffer, recordLength, fileFormat, getSignalHeaders().get(label));
-            // add to segment array
-            segment[i] = data;
         }
         
         return segment;
@@ -358,16 +354,16 @@ public class Header{
     private float[] convert(byte[] buffer, int recordLength, FileFormatType fileFormat, SignalHeader signal){
         float[] samples = new float[recordLength];
         if (fileFormat == FileFormatType.EDF || fileFormat == FileFormatType.EDF_PLUS) {
-            
+            throw new UnsupportedOperationException();
         }
         if (fileFormat == FileFormatType.BDF || fileFormat == FileFormatType.BDF_PLUS) {
             for (int i = 0; i < recordLength; i++) {
                 int value = (buffer[i * 3 + 2] << 24) & 0xff000000
                         | (buffer[i * 3 + 1] << 16) & 0x00ff0000
                         | (buffer[i * 3] << 8) & 0x0000ff00
-                        | (0 << 0) & 0x000000ff;
+                        | (0) & 0x000000ff;
                 samples[i] = (float) (signal.getPhysicalMinimum()
-                        + (double) ((signal.getPhysicalMaximum() - signal.getPhysicalMinimum())
+                        + ((signal.getPhysicalMaximum() - signal.getPhysicalMinimum())
                         * (value / 256 - signal.getDigitalMinimum()))
                         / (double) ((signal.getDigitalMaximum() - signal.getDigitalMinimum())));
 
@@ -379,7 +375,7 @@ public class Header{
         return samples;
     }
     
-    public float[] getDigitalSamples(SignalHeader.SIGNAL_TYPES signalType, String label, long start, long end) {       
+    float[] getDigitalSamples(SignalHeader.SIGNAL_TYPES signalType, String label, long start, long end) {
         /*
         EDFLib read data sequence
         
@@ -457,7 +453,7 @@ public class Header{
         // TODO: check that number of samples to read is within the file limits
         int durationInSamples = (int)((end - start));
 //        float data[] = new float[durationInSamples];
-    //    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //    ------------------------------------------------
         float data[] = new float[durationInSamples];
         
         
@@ -595,9 +591,9 @@ public class Header{
                             int value = (buffer.get(i * 3 + 2) << 24) & 0xff000000
                                     | (buffer.get(i * 3 + 1) << 16) & 0x00ff0000
                                     | (buffer.get(i * 3) << 8) & 0x0000ff00
-                                    | (0 << 0) & 0x000000ff;
+                                    | (0) & 0x000000ff;
                             data[sampleCounter] = (float) (signal.getPhysicalMinimum()
-                                    + (double) ((signal.getPhysicalMaximum() - signal.getPhysicalMinimum())
+                                    + ((signal.getPhysicalMaximum() - signal.getPhysicalMinimum())
                                     * (value/256 - signal.getDigitalMinimum()))
                                     / (double) ((signal.getDigitalMaximum() - signal.getDigitalMinimum())));
 //                            if (sampleCounter < 4*2048)

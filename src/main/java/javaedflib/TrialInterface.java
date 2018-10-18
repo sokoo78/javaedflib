@@ -52,7 +52,7 @@ public class TrialInterface {
     // input format
     public enum FileFormatType {
         EDF, EDF_PLUS, BDF, BDF_PLUS, CSV
-    };
+    }
 
     InputType inputType;
     FileFormatType fileFormat;
