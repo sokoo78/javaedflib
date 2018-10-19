@@ -2,9 +2,13 @@ package javaedflib;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class BinFile {
-    private java.lang.String path;
+    private String path;
 
     BinFile(String path) {
         this.path = path;
@@ -23,11 +27,22 @@ public class BinFile {
         return bytes;
     }
 
-    public java.lang.String getPath() {
+    void WriteBytes(byte[] bytes, StandardOpenOption mode) {
+        try {
+            if (!Files.exists(Paths.get(path)))
+                Files.createFile(Paths.get(path));
+            Files.write(Paths.get(path), bytes, mode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getPath() {
         return path;
     }
 
-    void setPath(java.lang.String path) {
+    void setPath(String path) {
         this.path = path;
     }
+
 }

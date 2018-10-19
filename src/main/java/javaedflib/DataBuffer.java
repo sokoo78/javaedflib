@@ -2,17 +2,22 @@ package javaedflib;
 
 import java.io.IOException;
 
-class DataInterface {
-    private DataReader dataReader;
+class DataBuffer {
+    private BinFileIO binFileIO;
     private FileHeader fileHeader;
 
-    DataInterface(String path) throws IOException {
-        dataReader = new DataReader(path);
-        fileHeader = dataReader.GetHeader();
+    DataBuffer(String path) throws IOException {
+        binFileIO = new BinFileIO(path);
+        fileHeader = binFileIO.ReadHeader();
     }
 
     String GetFileType() {
         return fileHeader.getVersion();
+    }
+
+    void PrintFileTypeName() {
+        if (fileHeader.getVersion().equals("0       "))
+            System.out.println("EDF");
     }
 
     void PrintHeader() {
@@ -26,5 +31,9 @@ class DataInterface {
         System.out.println(fileHeader.getNumberOfDataRecords());
         System.out.println(fileHeader.getDurationOfDataRecords());
         System.out.println(fileHeader.getNumberOfSignals());
+    }
+
+    void WriteHeader(String path) throws IOException {
+        binFileIO.WriteHeader(fileHeader, path);
     }
 }

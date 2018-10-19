@@ -61,8 +61,8 @@ public class SignalHeader {
     private double standardDeviation;
 
     
-    public static SignalHeader create(RandomAccessFile inputFile, FileFormatType format,
-            int numSignals, int signalIndex) {
+    static SignalHeader create(RandomAccessFile inputFile, FileFormatType format,
+                               int numSignals, int signalIndex) {
 
         /*
          * ns * 16 ascii : ns * label (e.g. EEG FpzCz or Body temp)
@@ -148,21 +148,17 @@ public class SignalHeader {
                     signalIndex,
                     new String(label).trim(), 
                     new String(transducerType).trim(), 
-                    new String(physicalDimension).trim(), 
-                    new Double(new String(physicalMinimum).trim()).doubleValue(), 
-                    new Double(new String(physicalMaximum).trim()).doubleValue(), 
-                    new Long(new String(digitalMinimum).trim()).intValue(), 
-                    new Long(new String(digitalMaximum).trim()).intValue(), 
-                    new String(prefilteringInfo).trim(), 
-                    new Long(new String(numberOfSamples).trim()).longValue(),
+                    new String(physicalDimension).trim(),
+                    Double.valueOf(new String(physicalMinimum).trim()),
+                    Double.valueOf(new String(physicalMaximum).trim()),
+                    Long.valueOf(new String(digitalMinimum).trim()).intValue(),
+                    Long.valueOf(new String(digitalMaximum).trim()).intValue(),
+                    new String(prefilteringInfo).trim(),
+                    Long.valueOf(new String(numberOfSamples).trim()),
                     new String(reserved).trim()
             );
             
-        } catch (IOException ex) {
-            Logger.getLogger(SignalHeader.class.getName()).log(Level.SEVERE, null, ex);
-        }catch(BufferUnderflowException ex){
-            Logger.getLogger(SignalHeader.class.getName()).log(Level.SEVERE, null, ex);
-        }catch(IndexOutOfBoundsException ex){
+        } catch (IOException | BufferUnderflowException | IndexOutOfBoundsException ex) {
             Logger.getLogger(SignalHeader.class.getName()).log(Level.SEVERE, null, ex);
         }
         buffer.clear();
