@@ -16,5 +16,6 @@ public class TestApp {
         // Test header writing
         String outputPath = System.getProperty("user.dir") + "\\src\\main\\test_output.edf";
         dataBuffer.WriteHeader(outputPath);
+        dataBuffer.PrintChannelLabels();
     }
 }

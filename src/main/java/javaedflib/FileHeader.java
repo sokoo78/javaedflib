@@ -21,10 +21,14 @@ class FileHeader {
     /** EDF/BDF Duration of a data record, in seconds or in nanoseconds? CHECK*/
     private long durationOfDataRecords;//duration in nanoseconds
     /** EDF/BDF Number of channels (N) in data record */
-    private int numberOfSignals;
+    private int numberOfChannels;
 
     String getVersion() {
-        return version;
+        if (version.equals("0"))
+            return "EDF";
+        if (version.equals("255"))
+            return "BDF";
+        return "Unknown";
     }
 
     void setVersion(String version) {
@@ -72,6 +76,8 @@ class FileHeader {
     }
 
     String getReserved() {
+        if (reserved.equals(""))
+            return "EDF (reserved)";
         return reserved;
     }
 
@@ -95,11 +101,11 @@ class FileHeader {
         this.durationOfDataRecords = durationOfDataRecords;
     }
 
-    int getNumberOfSignals() {
-        return numberOfSignals;
+    int getNumberOfChannels() {
+        return numberOfChannels;
     }
 
-    void setNumberOfSignals(int numberOfSignals) {
-        this.numberOfSignals = numberOfSignals;
+    void setNumberOfChannels(int numberOfChannels) {
+        this.numberOfChannels = numberOfChannels;
     }
 }

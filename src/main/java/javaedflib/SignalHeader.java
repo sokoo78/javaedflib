@@ -21,7 +21,8 @@ public class SignalHeader {
     public enum SIGNAL_TYPES {DISTANCE, AREA, VOLUME, DURATION, VELOCITY,
     MASS, ANGLE, PERCENTAGE, MONEY_VALUE, EEG, SEEG, ECG, EOG, ERG, EMG, MEG, MCG, EP, 
     TEMPERATURE, RESPIRATION, OXYGEN_SATURATION, LIGHT, SOUND, SOUND_PRESSURE_LEVEL, 
-    EVENT, ANNOTATION, UNKNOWN};
+    EVENT, ANNOTATION, UNKNOWN}
+
     private RandomAccessFile inputFile;
     private final FileFormatType fileFormat;
 
@@ -47,7 +48,7 @@ public class SignalHeader {
     /** EDF/BDF  */
     private int digitalMaximum;
     /** EDF/BDF Pre-filtering description (80 bytes), e.g. BDF: "HP:DC; LP:410" or EDF: "HP:0,16; LP:500" 	 */
-    private String prefilteringInfo;
+    private String preFilteringInfo;
     /** EDF/BDF  Number of samples in each data record. (Sample-rate if Duration of data record = "1") */
     private long numberOfSamples;
     /** EDF/BDF Reserved (32 bytes) */
@@ -72,7 +73,7 @@ public class SignalHeader {
          ns * 8 ascii : ns * physical maximum (e.g. 500 or 40)
          ns * 8 ascii : ns * digital minimum (e.g. -2048)
          ns * 8 ascii : ns * digital maximum (e.g. 2047)
-         ns * 80 ascii : ns * prefilteringInfo (e.g. HP:0.1Hz LP:75Hz)
+         ns * 80 ascii : ns * preFilteringInfo (e.g. HP:0.1Hz LP:75Hz)
          ns * 8 ascii : ns * numberOfSamples in each data record
          ns * 32 ascii : ns * reserved
          */
@@ -96,7 +97,7 @@ public class SignalHeader {
             byte[] physicalMaximum = new byte[8];
             byte[] digitalMinimum = new byte[8];
             byte[] digitalMaximum = new byte[8];
-            byte[] prefilteringInfo = new byte[80];
+            byte[] preFilteringInfo = new byte[80];
             byte[] numberOfSamples = new byte[8];
             byte[] reserved = new byte[32];
 
@@ -129,7 +130,7 @@ public class SignalHeader {
             position += numSignals * 8;
 
             buffer.position(position + signalIndex * 80);
-            buffer.get(prefilteringInfo);
+            buffer.get(preFilteringInfo);
             position += numSignals * 80;
 
             buffer.position(position + signalIndex * 8);
@@ -139,7 +140,7 @@ public class SignalHeader {
             buffer.position(position + signalIndex * 32);
             buffer.get(reserved);
             position += numSignals * 32;
-            
+
 //buffer.position(position + currentNumberOfSignal * 8);
 
             edfSignalHeader = new SignalHeader(
@@ -153,7 +154,7 @@ public class SignalHeader {
                     Double.valueOf(new String(physicalMaximum).trim()),
                     Long.valueOf(new String(digitalMinimum).trim()).intValue(),
                     Long.valueOf(new String(digitalMaximum).trim()).intValue(),
-                    new String(prefilteringInfo).trim(),
+                    new String(preFilteringInfo).trim(),
                     Long.valueOf(new String(numberOfSamples).trim()),
                     new String(reserved).trim()
             );
@@ -178,21 +179,19 @@ public class SignalHeader {
         // parse label for type and specification
         String[] labelWords = null;
         //special case for EDF/BDF Annotation label
-        if (label.equals("") || label.equals("")){
+        if (label.equals("")){
             labelWords = new String[]{label};
             signalType = SIGNAL_TYPES.ANNOTATION;
         }
         else 
             labelWords = label.split(" ");
-        if (labelWords != null){
-            if (labelWords.length == 1 ){
-                signalLabel = labelWords[0];
-                signalType = SIGNAL_TYPES.UNKNOWN;
-            }
-            if (labelWords.length == 2 ){
-                signalType = parseSignalType(labelWords);                
-                signalLabel = labelWords[1];
-            }            
+        if (labelWords.length == 1 ){
+            signalLabel = labelWords[0];
+            signalType = SIGNAL_TYPES.UNKNOWN;
+        }
+        if (labelWords.length == 2 ){
+            signalType = parseSignalType(labelWords);
+            signalLabel = labelWords[1];
         }
         this.transducerType = transducerType;
         this.physicalDimension = physicalDimension;
@@ -200,7 +199,7 @@ public class SignalHeader {
         this.physicalMaximum = physicalMaximum;
         this.digitalMinimum = digitalMinimum;
         this.digitalMaximum = digitalMaximum;
-        this.prefilteringInfo = prefilteringInfo;
+        this.preFilteringInfo = prefilteringInfo;
         this.numberOfSamples = numberOfSamples;
         this.reserved = reserved;
     }
@@ -263,11 +262,11 @@ public class SignalHeader {
         return signalType;
     }
     
-    public int getIndex(){
+    int getIndex(){
         return index;
     }
     
-    public String getLabel() {
+    String getLabel() {
         return label;
     }
     public String getTransducerType() {
@@ -276,22 +275,22 @@ public class SignalHeader {
     public String getPhysicalDimension() {
         return physicalDimension;
     }
-    public double getPhysicalMinimum() {
+    double getPhysicalMinimum() {
         return physicalMinimum;
     }
-    public double getPhysicalMaximum() {
+    double getPhysicalMaximum() {
         return physicalMaximum;
     }
-    public int getDigitalMinimum() {
+    int getDigitalMinimum() {
         return digitalMinimum;
     }
-    public int getDigitalMaximum() {
+    int getDigitalMaximum() {
         return digitalMaximum;
     }
-    public String getPrefiltering() {
-        return prefilteringInfo;
+    public String getPreFiltering() {
+        return preFilteringInfo;
     }
-    public long getNumberOfSamples() {
+    long getNumberOfSamples() {
         return numberOfSamples;
     }
     
@@ -307,7 +306,7 @@ public class SignalHeader {
     //
     //        float data[] = new float[(int)(end - start)];
     //
-    //////// TODO position is not yet corrct !!!!!!!!!!
+    //////// TODO position is not yet correct !!!!!!!!!!
     //
     //        long position = dataRecordPosition + start * numberOfSamples;
     //        try {
@@ -321,11 +320,11 @@ public class SignalHeader {
     //        }
     //        return data;
     //    }
-    public long getSignalDataOffset() {
+    long getSignalDataOffset() {
         return signalDataOffset;
     }
 
-    public void setSignalDataOffset(long signalDataOffset) {
+    void setSignalDataOffset(long signalDataOffset) {
         this.signalDataOffset = signalDataOffset;
     }
 

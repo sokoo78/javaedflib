@@ -1,8 +1,9 @@
 package javaedflib;
 
-import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -14,17 +15,16 @@ public class BinFile {
         this.path = path;
     }
 
-    byte[] ReadBytes(int offset, int length) {
-        byte[] bytes = new byte[length];
-        try (FileInputStream fis = new FileInputStream(path);
-             BufferedInputStream bis = new BufferedInputStream(fis)
-        ) {
-            bis.read(bytes, offset, length);
+    ByteBuffer ReadBytes(final long offset, int length) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(length);
+        try (FileChannel fileChannel = new FileInputStream(path).getChannel().position(offset) ) {
+            fileChannel.read(byteBuffer);
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return bytes;
+        byteBuffer.flip();
+        return byteBuffer;
     }
 
     void WriteBytes(byte[] bytes, StandardOpenOption mode) {
