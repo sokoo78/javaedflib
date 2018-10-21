@@ -23,7 +23,7 @@ public class BinFile {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        byteBuffer.flip();
+        byteBuffer.flip(); // Switch buffer to read only mode
         return byteBuffer;
     }
 

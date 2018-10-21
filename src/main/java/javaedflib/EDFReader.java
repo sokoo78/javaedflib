@@ -32,6 +32,7 @@ public class EDFReader {
             String[] labels = source.getSignalLabel();
             for (String label : labels) {
                 System.out.println(label);
+                System.out.println(header.getSignalHeaders().get(label).getPhysicalMinimum());
             }
             
             System.out.println("First 100 samples from channel 8");

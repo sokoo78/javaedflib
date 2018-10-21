@@ -12,10 +12,11 @@ public class TestApp {
 
         // Test header reading
         dataBuffer.PrintHeader();
+        dataBuffer.PrintChannelLabels();
 
         // Test header writing
         String outputPath = System.getProperty("user.dir") + "\\src\\main\\test_output.edf";
         dataBuffer.WriteHeader(outputPath);
-        dataBuffer.PrintChannelLabels();
+
     }
 }

@@ -14,12 +14,17 @@ class DataBuffer {
         channelHeaders = binFileIO.ReadChannelHeaders(fileHeader.getNumberOfChannels());
     }
 
-    String GetFileType() {
-        return fileHeader.getVersion();
+    String GetFileVersion() {
+        var version = fileHeader.getVersion();
+        if (version.equals("0"))
+            return "EDF";
+        if (version.equals("255"))
+            return "BDF";
+        return "Unknown";
     }
 
     void PrintHeader() {
-        System.out.println("File version:   " + fileHeader.getVersion());
+        System.out.println("File version:   " + GetFileVersion());
         System.out.println("Patient info:   " + fileHeader.getPatientInfo());
         System.out.println("Recording info: " + fileHeader.getRecordingInfo());
         System.out.println("Start date:     " + fileHeader.getStartDate());
@@ -33,9 +38,10 @@ class DataBuffer {
 
     void WriteHeader(String path) throws IOException {
         binFileIO.WriteFileHeader(fileHeader, path);
+        binFileIO.WriteChannelHeaders(channelHeaders, path);
     }
 
     void PrintChannelLabels() {
-        channelHeaders.forEach((k,v)->System.out.println("Channel: " + k + " - Label : " + v.getLabelOfChannel()));
+        channelHeaders.forEach((k,v)->System.out.println("Channel: " + k + " - Label : " + v.getPhysicalMinimum()));
     }
 }

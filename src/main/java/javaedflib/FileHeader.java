@@ -24,11 +24,7 @@ class FileHeader {
     private int numberOfChannels;
 
     String getVersion() {
-        if (version.equals("0"))
-            return "EDF";
-        if (version.equals("255"))
-            return "BDF";
-        return "Unknown";
+        return version;
     }
 
     void setVersion(String version) {
@@ -76,8 +72,6 @@ class FileHeader {
     }
 
     String getReserved() {
-        if (reserved.equals(""))
-            return "EDF (reserved)";
         return reserved;
     }
 

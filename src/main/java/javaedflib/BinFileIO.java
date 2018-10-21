@@ -4,8 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.StandardOpenOption;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.IntStream;
 
@@ -148,9 +151,9 @@ class BinFileIO {
         byte[] durationOfDataRecords = Long.toString(fileHeader.getDurationOfDataRecords()).getBytes();
         byte[] numberOfSignals = Integer.toString(fileHeader.getNumberOfChannels()).getBytes();
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         outputStream.write(version);
-        outputStream.write(SpaceByteArray(8 - version.length));
+        outputStream.write(SpaceByteArray(8 - version.length)); // Fill up remaining bytes with spaces
         outputStream.write(patientInfo);
         outputStream.write(SpaceByteArray(80 - patientInfo.length));
         outputStream.write(recordingInfo);
@@ -170,9 +173,75 @@ class BinFileIO {
         outputStream.write(numberOfSignals);
         outputStream.write(SpaceByteArray(4 - numberOfSignals.length));
 
-        byte[] binaryHeader = outputStream.toByteArray( );
+        byte[] binaryHeader = outputStream.toByteArray();
         outputFile = new BinFile(path);
         outputFile.WriteBytes(binaryHeader, StandardOpenOption.WRITE);
+    }
+
+    void WriteChannelHeaders(Map<Integer, ChannelHeader> channelHeaders, String path) throws IOException {
+
+        DecimalFormat formatter = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        formatter.setMaximumFractionDigits(340);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        for (int channelIndex = 0;  channelIndex < channelHeaders.size(); channelIndex++) {
+            byte[] label = channelHeaders.get(channelIndex).getLabelOfChannel().getBytes();
+            outputStream.write(label);
+            outputStream.write(SpaceByteArray(16 - label.length)); // Fill up remaining bytes with spaces
+        }
+        for (int channelIndex = 0;  channelIndex < channelHeaders.size(); channelIndex++) {
+            byte[] transducerType = channelHeaders.get(channelIndex).getTransducerType().getBytes();
+            outputStream.write(transducerType);
+            outputStream.write(SpaceByteArray(80 - transducerType.length));
+        }
+        for (int channelIndex = 0;  channelIndex < channelHeaders.size(); channelIndex++) {
+            byte[] physicalDimension = channelHeaders.get(channelIndex).getPhysicalDimension().getBytes();
+            outputStream.write(physicalDimension);
+            outputStream.write(SpaceByteArray(8 - physicalDimension.length));
+        }
+        for (int channelIndex = 0;  channelIndex < channelHeaders.size(); channelIndex++) {
+            System.out.println(formatter.format(channelHeaders.get(channelIndex).getPhysicalMinimum()));
+            byte[] physicalMinimum = formatter.format(channelHeaders.get(channelIndex).getPhysicalMinimum()).getBytes();
+            outputStream.write(physicalMinimum);
+            outputStream.write(SpaceByteArray(8 - physicalMinimum.length));
+        }
+        for (int channelIndex = 0;  channelIndex < channelHeaders.size(); channelIndex++) {
+            System.out.println(formatter.format(channelHeaders.get(channelIndex).getPhysicalMaximum()));
+            byte[] physicalMaximum = formatter.format(channelHeaders.get(channelIndex).getPhysicalMaximum()).getBytes();
+            outputStream.write(physicalMaximum);
+            outputStream.write(SpaceByteArray(8 - physicalMaximum.length));
+        }
+        for (int channelIndex = 0;  channelIndex < channelHeaders.size(); channelIndex++) {
+            byte[] digitalMinimum = Integer.toString(channelHeaders.get(channelIndex).getDigitalMinimum()).getBytes();
+            outputStream.write(digitalMinimum);
+            outputStream.write(SpaceByteArray(8 - digitalMinimum.length));
+        }
+        for (int channelIndex = 0;  channelIndex < channelHeaders.size(); channelIndex++) {
+            byte[] digitalMaximum = Integer.toString(channelHeaders.get(channelIndex).getDigitalMaximum()).getBytes();
+            outputStream.write(digitalMaximum);
+            outputStream.write(SpaceByteArray(8 - digitalMaximum.length));
+        }
+        for (int channelIndex = 0;  channelIndex < channelHeaders.size(); channelIndex++) {
+            byte[] preFilteringInfo = channelHeaders.get(channelIndex).getPreFilteringInfo().getBytes();
+            outputStream.write(preFilteringInfo);
+            outputStream.write(SpaceByteArray(80 - preFilteringInfo.length));
+        }
+        for (int channelIndex = 0;  channelIndex < channelHeaders.size(); channelIndex++) {
+            byte[] numberOfSamples = Long.toString(channelHeaders.get(channelIndex).getNumberOfSamples()).getBytes();
+            outputStream.write(numberOfSamples);
+            outputStream.write(SpaceByteArray(8 - numberOfSamples.length));
+        }
+        for (int channelIndex = 0;  channelIndex < channelHeaders.size(); channelIndex++) {
+            byte[] reserved = channelHeaders.get(channelIndex).getReserved().getBytes();
+            outputStream.write(reserved);
+            outputStream.write(SpaceByteArray(32 - reserved.length));
+        }
+
+        // TODO: data lengths to be checked and rounded as necessary
+        byte[] binaryHeaders = outputStream.toByteArray();
+        outputFile = new BinFile(path);
+        outputFile.WriteBytes(binaryHeaders, StandardOpenOption.APPEND);
     }
 
     /**
