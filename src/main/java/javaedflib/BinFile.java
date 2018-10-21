@@ -1,33 +1,48 @@
 package javaedflib;
 
-import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class BinFile {
-    private java.lang.String path;
+    private String path;
 
     BinFile(String path) {
         this.path = path;
     }
 
-    byte[] ReadBytes(int offset, int length) {
-        byte[] bytes = new byte[length];
-        try (FileInputStream fis = new FileInputStream(path);
-             BufferedInputStream bis = new BufferedInputStream(fis)
-        ) {
-            bis.read(bytes, offset, length);
+    ByteBuffer ReadBytes(final long offset, int length) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(length);
+        try (FileChannel fileChannel = new FileInputStream(path).getChannel().position(offset) ) {
+            fileChannel.read(byteBuffer);
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return bytes;
+        byteBuffer.flip(); // Switch buffer to read only mode
+        return byteBuffer;
     }
 
-    public java.lang.String getPath() {
+    void WriteBytes(byte[] bytes, StandardOpenOption mode) {
+        try {
+            if (!Files.exists(Paths.get(path)))
+                Files.createFile(Paths.get(path));
+            Files.write(Paths.get(path), bytes, mode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getPath() {
         return path;
     }
 
-    void setPath(java.lang.String path) {
+    void setPath(String path) {
         this.path = path;
     }
+
 }

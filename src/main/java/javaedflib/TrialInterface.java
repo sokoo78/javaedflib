@@ -23,11 +23,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-//import electrode.BIOSEMI_ABC_128_MAPPING;
-
-//import streamingeegexperiment.EEGData;
-//import streamingeegexperiment.FIRFilter;
-//import streamingeegexperiment.FIRFilterGPU;
 
 /**
  *
@@ -54,15 +49,15 @@ public class TrialInterface {
         EDF, EDF_PLUS, BDF, BDF_PLUS, CSV
     }
 
-    InputType inputType;
-    FileFormatType fileFormat;
-    File inputFile;
+    private InputType inputType;
+    private FileFormatType fileFormat;
+    private File inputFile;
 
     Header header;
 //    BDFHeader bdfHeader;
 
 //    Map<String, EDFSignalHeader> edfSignalHeaders; 
-    public void setInput(File inputfile) throws FileNotFoundException, IOException {
+    void setInput(File inputfile) throws FileNotFoundException, IOException {
         // store measurement data file and set descriptive parameters
         if (inputfile == null) {
             throw new IllegalArgumentException("Measurement data file is null.");
@@ -138,7 +133,7 @@ public class TrialInterface {
      * Returns the next segment of data from an EEG data file as channels x samples array.
      * The number of samples is the same as the length of one data record, 
      * or defaults to 1 second.
-     * It is assumed that the underlying inputstream is already open and stored in the Header instance.
+     * It is assumed that the underlying input stream is already open and stored in the Header instance.
      * This methods is intended to read data sequentially, record-by-record from the file
      * Returns -1 when end of file is reached
      * @return 
@@ -156,7 +151,7 @@ public class TrialInterface {
      * @param end
      * @return
      */
-    public float[] getChannelData(SignalHeader.SIGNAL_TYPES signalType, String channelLabel, long start, long end) {
+    float[] getChannelData(SignalHeader.SIGNAL_TYPES signalType, String channelLabel, long start, long end) {
         float[] records = null;
         if (inputType == InputType.FILE) {
             if (fileFormat == FileFormatType.EDF) {
