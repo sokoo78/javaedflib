@@ -7,7 +7,7 @@ public class TestApp {
     public static void main(String[] args) throws IOException {
 
         // Create class to hold data
-         String inputPath = System.getProperty("user.dir") + "\\src\\main\\test_generator.edf";
+        String inputPath = System.getProperty("user.dir") + "\\src\\main\\test_generator.edf";
         var dataBuffer = new DataBuffer(inputPath);
 
         // Test header reading
@@ -17,6 +17,10 @@ public class TestApp {
         // Test header writing
         String outputPath = System.getProperty("user.dir") + "\\src\\main\\test_output.edf";
         dataBuffer.WriteHeader(outputPath);
+
+        // Test signal reading
+        dataBuffer.ReadRecords(1, 1);
+        dataBuffer.PrintRecords(1, 1);
 
     }
 }

@@ -7,11 +7,26 @@ class DataBuffer {
     private BinFileIO binFileIO;
     private FileHeader fileHeader;
     private Map<Integer, ChannelHeader> channelHeaders;
+    private Object[][][] signals;
 
     DataBuffer(String path) throws IOException {
         binFileIO = new BinFileIO(path);
         fileHeader = binFileIO.ReadFileHeader();
         channelHeaders = binFileIO.ReadChannelHeaders(fileHeader.getNumberOfChannels());
+    }
+
+    void ReadRecords(int start, int length) {
+        signals = binFileIO.ReadRecords(fileHeader.getHeaderSize(), fileHeader.getNumberOfChannels(), fileHeader.getNumberOfDataRecords(), start, length);
+    }
+
+    void PrintRecords(int start, int length) {
+        for (int channel = 0; channel < fileHeader.getNumberOfChannels(); channel++ ) {
+            for (int time = start; time < time + length; time++) {
+                for (int sample = 0; sample < fileHeader.getNumberOfDataRecords(); sample++) {
+                    System.out.println(signals[channel][time][sample]);
+                }
+            }
+        }
     }
 
     String GetFileVersion() {
@@ -42,6 +57,6 @@ class DataBuffer {
     }
 
     void PrintChannelLabels() {
-        channelHeaders.forEach((k,v)->System.out.println("Channel: " + k + " - Label : " + v.getPhysicalMinimum()));
+        channelHeaders.forEach((key,value)->System.out.println("Channel[" + key + "] label : " + value.getLabelOfChannel()));
     }
 }
