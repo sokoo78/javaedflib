@@ -1,35 +1,28 @@
 package javaedflib;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 class DataBuffer {
     private BinFileIO binFileIO;
     private FileHeader fileHeader;
-    private Map<Integer, ChannelHeader> channelHeaders;
-    private Object[][][] signals;
+    private Map<Integer, Channel> channels = new HashMap<>();
 
     DataBuffer(String path) throws IOException {
         binFileIO = new BinFileIO(path);
         fileHeader = binFileIO.ReadFileHeader();
-        channelHeaders = binFileIO.ReadChannelHeaders(fileHeader.getNumberOfChannels());
+        InitializeChannels();
     }
 
-    void ReadRecords(int start, int length) {
-        signals = binFileIO.ReadRecords(fileHeader.getHeaderSize(), fileHeader.getNumberOfChannels(), fileHeader.getNumberOfDataRecords(), start, length);
-    }
-
-    void PrintRecords(int start, int length) {
-        for (int channel = 0; channel < fileHeader.getNumberOfChannels(); channel++ ) {
-            for (int time = start; time < time + length; time++) {
-                for (int sample = 0; sample < fileHeader.getNumberOfDataRecords(); sample++) {
-                    System.out.println(signals[channel][time][sample]);
-                }
-            }
+    private void InitializeChannels() throws IOException {
+        Map<Integer, ChannelHeader> channelHeaders = binFileIO.ReadChannelHeaders(fileHeader.getNumberOfChannels());
+        for (int i = 0; i < channelHeaders.size(); i++) {
+            channels.put(i, new Channel(channelHeaders.get(i)));
         }
     }
 
-    String GetFileVersion() {
+    private String GetFileVersion() {
         var version = fileHeader.getVersion();
         if (version.equals("0"))
             return "EDF";
@@ -38,7 +31,7 @@ class DataBuffer {
         return "Unknown";
     }
 
-    void PrintHeader() {
+    void PrintFileHeader() {
         System.out.println("File version:   " + GetFileVersion());
         System.out.println("Patient info:   " + fileHeader.getPatientInfo());
         System.out.println("Recording info: " + fileHeader.getRecordingInfo());
@@ -51,12 +44,15 @@ class DataBuffer {
         System.out.println("Number of channels: " + fileHeader.getNumberOfChannels());
     }
 
-    void WriteHeader(String path) throws IOException {
+    void WriteFileHeader(String path) throws IOException {
         binFileIO.WriteFileHeader(fileHeader, path);
+
+        Map<Integer, ChannelHeader> channelHeaders = new HashMap<>();
+        channels.forEach((key,value) -> channelHeaders.put(key, value.getChannelHeader()));
         binFileIO.WriteChannelHeaders(channelHeaders, path);
     }
 
     void PrintChannelLabels() {
-        channelHeaders.forEach((key,value)->System.out.println("Channel[" + key + "] label : " + value.getLabelOfChannel()));
+        channels.forEach((key,value)->System.out.println("Channel[" + key + "] label : " + value.getName()));
     }
 }

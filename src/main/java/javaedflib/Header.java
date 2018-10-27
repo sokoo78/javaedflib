@@ -1138,7 +1138,7 @@ public class Header{
         return (int) (NANOSEC * signalHeaders.get(label).getNumberOfSamples() / durationOfDataRecords);
     }
 
-    public List<Channel> getSamplesTotal(long sampleStart, long sampleEnd) {
+    public List<Channel_old> getSamplesTotal(long sampleStart, long sampleEnd) {
         /*
          // timestamp:
          number of records   (eg 10)
@@ -1150,11 +1150,11 @@ public class Header{
          sampling frequency = 600 / 1 Hz
          time delta = 1 / 600 (start adding this to start time)
          */
-        List<Channel> channels = new ArrayList<>();
+        List<Channel_old> channels = new ArrayList<>();
         // read 1 second for all channels, than the next and so on for improved file access performance
         // prepare data structure for returning samples
         for (int i = 0; i < signalLabels.length; i++) {
-            Channel chan = new Channel();
+            Channel_old chan = new Channel_old();
             chan.label = signalLabels[i];
             if (chan.label.equals("Status"))
                 chan.trigger = new int[(int)(sampleEnd - sampleStart)];

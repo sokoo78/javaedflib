@@ -1,6 +1,6 @@
 package javaedflib;
 
-public class ChannelHeader {
+class ChannelHeader {
 
     /** EDF/BDF Labels of the channels (16 bytes)
         label has a 'type' 'space' 'sensor specification' format. */
@@ -24,83 +24,83 @@ public class ChannelHeader {
     /** EDF/BDF Reserved (32 bytes) */
     private String reserved;
 
-    public String getLabelOfChannel() {
+    String getLabelOfChannel() {
         return LabelOfChannel;
     }
 
-    public void setLabelOfChannel(String labelOfChannel) {
+    void setLabelOfChannel(String labelOfChannel) {
         LabelOfChannel = labelOfChannel;
     }
 
-    public String getTransducerType() {
+    String getTransducerType() {
         return transducerType;
     }
 
-    public void setTransducerType(String transducerType) {
+    void setTransducerType(String transducerType) {
         this.transducerType = transducerType;
     }
 
-    public String getPhysicalDimension() {
+    String getPhysicalDimension() {
         return physicalDimension;
     }
 
-    public void setPhysicalDimension(String physicalDimension) {
+    void setPhysicalDimension(String physicalDimension) {
         this.physicalDimension = physicalDimension;
     }
 
-    public double getPhysicalMinimum() {
+    double getPhysicalMinimum() {
         return physicalMinimum;
     }
 
-    public void setPhysicalMinimum(double physicalMinimum) {
+    void setPhysicalMinimum(double physicalMinimum) {
         this.physicalMinimum = physicalMinimum;
     }
 
-    public double getPhysicalMaximum() {
+    double getPhysicalMaximum() {
         return physicalMaximum;
     }
 
-    public void setPhysicalMaximum(double physicalMaximum) {
+    void setPhysicalMaximum(double physicalMaximum) {
         this.physicalMaximum = physicalMaximum;
     }
 
-    public int getDigitalMinimum() {
+    int getDigitalMinimum() {
         return digitalMinimum;
     }
 
-    public void setDigitalMinimum(int digitalMinimum) {
+    void setDigitalMinimum(int digitalMinimum) {
         this.digitalMinimum = digitalMinimum;
     }
 
-    public int getDigitalMaximum() {
+    int getDigitalMaximum() {
         return digitalMaximum;
     }
 
-    public void setDigitalMaximum(int digitalMaximum) {
+    void setDigitalMaximum(int digitalMaximum) {
         this.digitalMaximum = digitalMaximum;
     }
 
-    public String getPreFilteringInfo() {
+    String getPreFilteringInfo() {
         return preFilteringInfo;
     }
 
-    public void setPreFilteringInfo(String preFilteringInfo) {
+    void setPreFilteringInfo(String preFilteringInfo) {
         this.preFilteringInfo = preFilteringInfo;
     }
 
-    public long getNumberOfSamples() {
+    long getNumberOfSamples() {
         return numberOfSamples;
     }
 
-    public void setNumberOfSamples(long numberOfSamples) {
+    void setNumberOfSamples(long numberOfSamples) {
         this.numberOfSamples = numberOfSamples;
     }
 
-    public String getReserved() {
+    String getReserved() {
         return reserved;
     }
 
-    public void setReserved(String reserved) {
+    void setReserved(String reserved) {
         this.reserved = reserved;
     }
 

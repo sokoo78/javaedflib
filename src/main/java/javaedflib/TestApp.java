@@ -11,16 +11,14 @@ public class TestApp {
         var dataBuffer = new DataBuffer(inputPath);
 
         // Test header reading
-        dataBuffer.PrintHeader();
+        dataBuffer.PrintFileHeader();
         dataBuffer.PrintChannelLabels();
 
         // Test header writing
         String outputPath = System.getProperty("user.dir") + "\\src\\main\\test_output.edf";
-        dataBuffer.WriteHeader(outputPath);
+        dataBuffer.WriteFileHeader(outputPath);
 
         // Test signal reading
-        dataBuffer.ReadRecords(1, 1);
-        dataBuffer.PrintRecords(1, 1);
 
     }
 }
