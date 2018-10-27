@@ -2,7 +2,6 @@ package javaedflib;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.file.StandardOpenOption;
 import java.text.DecimalFormat;
@@ -146,7 +145,7 @@ class BinFileIO {
         Integer timeslot = 1;
         Float signal;
         // TODO: implement method
-        // TODO: fill up: Array[Channel][TimeSlot][Sample]
+        // TODO: fill up: Array[Channel_old][TimeSlot][Sample]
         return signals;
     }
 

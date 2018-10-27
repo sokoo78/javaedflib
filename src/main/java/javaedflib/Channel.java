@@ -1,17 +1,49 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package javaedflib;
 
-/**
- *
- * @author juhasz
- */
-public class Channel {
-    
-    public String label;
-    public float[] data;     //int[] or float[] array 
-    public int[] trigger;     //int[] or float[] array 
+class Channel {
+    private ChannelHeader channelHeader;
+
+    int startTimeSlot;
+    float[] signals;
+    int[] trigger;
+
+    Channel(ChannelHeader channelHeader) {
+        this.channelHeader = channelHeader;
+    }
+
+    String getName() {
+        return channelHeader.getLabelOfChannel();
+    }
+
+    long getSampleNumber() {
+        return channelHeader.getNumberOfSamples();
+    }
+
+    ChannelHeader getChannelHeader() {
+        return channelHeader;
+    }
+
+    public int getStartTimeSlot() {
+        return startTimeSlot;
+    }
+
+    public void setStartTimeSlot(int startTimeSlot) {
+        this.startTimeSlot = startTimeSlot;
+    }
+
+    public float[] getSignals() {
+        return signals;
+    }
+
+    public void setSignals(float[] signals) {
+        this.signals = signals;
+    }
+
+    public int[] getTrigger() {
+        return trigger;
+    }
+
+    public void setTrigger(int[] trigger) {
+        this.trigger = trigger;
+    }
 }

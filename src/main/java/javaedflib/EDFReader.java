@@ -28,7 +28,7 @@ public class EDFReader {
             System.out.println("Start date: " + header.getStartDate());
             System.out.println("No of channels: " + header.getNumberOfSignals());
             
-            System.out.println("Channel names: ");
+            System.out.println("Channel_old names: ");
             String[] labels = source.getSignalLabel();
             for (String label : labels) {
                 System.out.println(label);

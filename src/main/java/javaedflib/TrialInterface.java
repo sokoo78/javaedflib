@@ -216,9 +216,9 @@ public class TrialInterface {
         return values;
     }
 
-    public List<Channel> getChannels(long sampleStart, long sampleEnd) {
+    public List<Channel_old> getChannels(long sampleStart, long sampleEnd) {
         // read samples for all channels in the specified sample interval        
-        List<Channel> channels = header.getSamplesTotal(sampleStart, sampleEnd);
+        List<Channel_old> channels = header.getSamplesTotal(sampleStart, sampleEnd);
         return channels;
     }
         
