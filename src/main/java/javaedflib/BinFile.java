@@ -43,8 +43,4 @@ class BinFile {
         return path;
     }
 
-    void setPath(String path) {
-        this.path = path;
-    }
-
 }
