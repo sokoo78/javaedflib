@@ -17,14 +17,16 @@ class BinFile {
 
     ByteBuffer ReadBytes(final long offset, int length) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(length);
-        try (FileChannel fileChannel = new FileInputStream(path).getChannel().position(offset) ) {
+        try (FileChannel fileChannel = new FileInputStream(path).getChannel().position(offset)) {
             fileChannel.read(byteBuffer);
+            byteBuffer.flip(); // Switch buffer to read only mode
+
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        byteBuffer.flip(); // Switch buffer to read only mode
         return byteBuffer;
+
     }
 
     void WriteBytes(byte[] bytes, StandardOpenOption mode) {
