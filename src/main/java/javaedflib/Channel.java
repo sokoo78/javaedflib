@@ -4,6 +4,7 @@ class Channel {
     private ChannelHeader channelHeader;
 
     int startTimeSlot;
+    int endTimeSlot;
     float[] signals;
     int[] trigger;
 
@@ -30,6 +31,15 @@ class Channel {
     public void setStartTimeSlot(int startTimeSlot) {
         this.startTimeSlot = startTimeSlot;
     }
+
+    public int getEndTimeSlot() {
+        return this.endTimeSlot;
+    }
+
+    public void setEndTimeSlot(int endTimeSlot) {
+        this.endTimeSlot=endTimeSlot;
+    }
+
 
     public float[] getSignals() {
         return signals;
