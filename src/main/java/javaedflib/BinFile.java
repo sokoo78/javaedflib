@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-public class BinFile {
+class BinFile {
     private String path;
 
     BinFile(String path) {
@@ -37,7 +37,7 @@ public class BinFile {
         }
     }
 
-    public String getPath() {
+    String getPath() {
         return path;
     }
 

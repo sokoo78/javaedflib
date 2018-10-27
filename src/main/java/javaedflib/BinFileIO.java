@@ -2,22 +2,24 @@ package javaedflib;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.file.StandardOpenOption;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
 class BinFileIO {
     private BinFile inputFile;
     private BinFile outputFile;
+    private String fileType;
+    private int dataLength;
 
     BinFileIO(String path) {
         inputFile = new BinFile(path);
+        setFileType();
+        setDataLength();
     }
 
     FileHeader ReadFileHeader() {
@@ -138,6 +140,16 @@ class BinFileIO {
         return channelHeaders;
     }
 
+    Object[][][] ReadRecords(int headerSize, int numberOfChannels, int sampleRate, int start, int length) {
+        Object[][][] signals = new Object[numberOfChannels][length][sampleRate];
+        Integer channel = 1;
+        Integer timeslot = 1;
+        Float signal;
+        // TODO: implement method
+        // TODO: fill up: Array[Channel][TimeSlot][Sample]
+        return signals;
+    }
+
     void WriteFileHeader(FileHeader fileHeader, String path) throws IOException {
 
         byte[] version = fileHeader.getVersion().getBytes();
@@ -201,13 +213,11 @@ class BinFileIO {
             outputStream.write(SpaceByteArray(8 - physicalDimension.length));
         }
         for (int channelIndex = 0;  channelIndex < channelHeaders.size(); channelIndex++) {
-            System.out.println(formatter.format(channelHeaders.get(channelIndex).getPhysicalMinimum()));
             byte[] physicalMinimum = formatter.format(channelHeaders.get(channelIndex).getPhysicalMinimum()).getBytes();
             outputStream.write(physicalMinimum);
             outputStream.write(SpaceByteArray(8 - physicalMinimum.length));
         }
         for (int channelIndex = 0;  channelIndex < channelHeaders.size(); channelIndex++) {
-            System.out.println(formatter.format(channelHeaders.get(channelIndex).getPhysicalMaximum()));
             byte[] physicalMaximum = formatter.format(channelHeaders.get(channelIndex).getPhysicalMaximum()).getBytes();
             outputStream.write(physicalMaximum);
             outputStream.write(SpaceByteArray(8 - physicalMaximum.length));
@@ -286,5 +296,33 @@ class BinFileIO {
 
     public void setOutputFile(BinFile outputFile) {
         this.outputFile = outputFile;
+    }
+
+    private Optional<String> getExtension(String filename) {
+        return Optional.ofNullable(filename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(filename.lastIndexOf(".") + 1));
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    private void setFileType() {
+        fileType = getExtension(inputFile.getPath()).toString().toUpperCase();
+    }
+
+    public int getDataLength() {
+        return dataLength;
+    }
+
+    private void setDataLength() {
+        switch (fileType) {
+            case "EDF" : dataLength = 2;
+                break;
+            case "BDF" : dataLength = 3;
+                break;
+            default : dataLength = 2;
+        }
     }
 }
