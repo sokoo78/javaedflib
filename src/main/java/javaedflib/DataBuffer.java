@@ -1,8 +1,13 @@
 package javaedflib;
 
+import jdk.jfr.Timespan;
+
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
+
 
 class DataBuffer {
     private BinFileIO binFileIO;
@@ -16,10 +21,44 @@ class DataBuffer {
     }
 
     private void InitializeChannels() throws IOException {
-        Map<Integer, ChannelHeader> channelHeaders = binFileIO.ReadChannelHeaders(fileHeader.getNumberOfChannels());
-        for (int i = 0; i < channelHeaders.size(); i++) {
-            channels.put(i, new Channel(channelHeaders.get(i)));
+        Map<Integer, ChannelHeader> channelHeaders = binFileIO.ReadChannelHeaders(fileHeader.getNumberOfChannels()) ;
+        int startbyte=fileHeader.getHeaderSize();
+        int offset=startbyte;
+        int lenght;
+        int byteNum;
+        switch (fileHeader.getVersion()) {
+
+            case "0":
+                byteNum=2;
+                break;
+
+            case "255":
+                byteNum=3;
+                break;
+
+                default: byteNum=2;
         }
+
+
+
+//       for (int i = 0; i < channelHeaders.size(); i++) {                   //Channel Number
+            Channel C=new Channel(channelHeaders.get(0));
+            TreeMap<Integer,Float[]> timeSlotData=new TreeMap<>();
+
+          //for (int ts=0; ts<fileHeader.getNumberOfDataRecords(); ts++) {    //Data record number
+
+
+
+                 // binFileIO.readChannelData(C.getSampleNumber(),byteNum,offset);
+                 timeSlotData.put(1, binFileIO.readChannelData((int)C.getSampleNumber(),byteNum,offset));
+
+          //        offset+=lenght;
+
+
+
+            channels.put(1, C);
+
+ //       }
     }
 
     private String GetFileVersion() {
@@ -53,6 +92,6 @@ class DataBuffer {
     }
 
     void PrintChannelLabels() {
-        channels.forEach((key,value)->System.out.println("Channel[" + key + "] label : " + value.getName()));
+        channels.forEach((key,value)->System.out.println("Channel[" + key + "] label : " + value.getName() + " SampleNumber : " + value.getSampleNumber()));
     }
 }

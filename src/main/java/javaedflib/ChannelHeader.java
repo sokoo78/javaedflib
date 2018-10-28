@@ -24,6 +24,7 @@ class ChannelHeader {
     /** EDF/BDF Reserved (32 bytes) */
     private String reserved;
 
+
     String getLabelOfChannel() {
         return LabelOfChannel;
     }
@@ -103,5 +104,6 @@ class ChannelHeader {
     void setReserved(String reserved) {
         this.reserved = reserved;
     }
+
 
 }

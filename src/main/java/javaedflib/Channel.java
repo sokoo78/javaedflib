@@ -1,5 +1,8 @@
 package javaedflib;
 
+
+import java.util.TreeMap;
+
 class Channel {
     private ChannelHeader channelHeader;
 
@@ -7,6 +10,9 @@ class Channel {
     int endTimeSlot;
     float[] signals;
     int[] trigger;
+    TreeMap<Integer,Float[]> ChannelData;
+
+
 
     Channel(ChannelHeader channelHeader) {
         this.channelHeader = channelHeader;
@@ -56,4 +62,6 @@ class Channel {
     public void setTrigger(int[] trigger) {
         this.trigger = trigger;
     }
+
+
 }

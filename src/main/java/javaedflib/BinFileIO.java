@@ -139,11 +139,10 @@ class BinFileIO {
         return channelHeaders;
     }
 
-    Object[][][] ReadRecords(int headerSize, int numberOfChannels, int sampleRate, int start, int length) {
-        Object[][][] signals = new Object[numberOfChannels][length][sampleRate];
-        Integer channel = 1;
-        Integer timeslot = 1;
-        Float signal;
+    Object[][] ReadRecords(int timeSlot, int sample, int start, int length) {
+        Object[][] signals = new Object[timeSlot][sample];
+
+        //Float signal;
         // TODO: implement method
         // TODO: fill up: Array[Channel_old][TimeSlot][Sample]
         return signals;
@@ -323,5 +322,28 @@ class BinFileIO {
                 break;
             default : dataLength = 2;
         }
+    }
+
+    Float[] readChannelData (int sampleNum, int byteNum, int offset) {
+
+        int lenght=sampleNum*byteNum;
+        byte[] bytes=new byte[byteNum] ;
+        float value;
+        Float[] values=new Float[sampleNum];
+    ByteBuffer sampleBytes=ByteBuffer.allocate(lenght);
+    sampleBytes=inputFile.ReadBytes(offset,lenght);
+        //int position=0;
+        //sampleBytes.position(position+byteNum);
+
+    for (int s=0; s<sampleNum; s++) {
+        for (int b=0; b<byteNum; b++ ) {
+
+            sampleBytes.get(bytes);
+            value=bytes[0]+bytes[1]*255;
+            values[s]=value;
+            sampleBytes.position(sampleBytes.position()+byteNum);
+        }
+    }
+        return values;
     }
 }
