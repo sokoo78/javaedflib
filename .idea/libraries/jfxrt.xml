@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="jfxrt">
     <CLASSES>
-      <root url="jar://$APPLICATION_HOME_DIR$/jre64/lib/ext/jfxrt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/main/java/javaedflib/Dependencies/jfxrt.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

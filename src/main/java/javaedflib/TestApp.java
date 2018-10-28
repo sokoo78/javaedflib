@@ -19,6 +19,7 @@ public class TestApp {
         dataBuffer.WriteFileHeader(outputPath);
 
         // Test signal reading
+        dataBuffer.printChannelData(0);
 
     }
 }

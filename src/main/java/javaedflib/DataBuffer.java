@@ -18,11 +18,15 @@ class DataBuffer {
         binFileIO = new BinFileIO(path);
         fileHeader = binFileIO.ReadFileHeader();
         InitializeChannels();
+
+/*
+
+*/
     }
 
     private void InitializeChannels() throws IOException {
         Map<Integer, ChannelHeader> channelHeaders = binFileIO.ReadChannelHeaders(fileHeader.getNumberOfChannels()) ;
-        int startbyte=fileHeader.getHeaderSize();
+        int startbyte=fileHeader.getHeaderSize()+1;
         int offset=startbyte;
         int lenght;
         int byteNum;
@@ -41,24 +45,10 @@ class DataBuffer {
 
 
 
-//       for (int i = 0; i < channelHeaders.size(); i++) {                   //Channel Number
-            Channel C=new Channel(channelHeaders.get(0));
-            TreeMap<Integer,Float[]> timeSlotData=new TreeMap<>();
+        for (int i = 0; i < channelHeaders.size(); i++) {
 
-          //for (int ts=0; ts<fileHeader.getNumberOfDataRecords(); ts++) {    //Data record number
-
-
-
-                 // binFileIO.readChannelData(C.getSampleNumber(),byteNum,offset);
-                 timeSlotData.put(1, binFileIO.readChannelData((int)C.getSampleNumber(),byteNum,offset));
-
-          //        offset+=lenght;
-
-
-
-            channels.put(1, C);
-
- //       }
+            channels.put(i, new Channel(channelHeaders.get(i)));
+        }
     }
 
     private String GetFileVersion() {
@@ -94,4 +84,14 @@ class DataBuffer {
     void PrintChannelLabels() {
         channels.forEach((key,value)->System.out.println("Channel[" + key + "] label : " + value.getName() + " SampleNumber : " + value.getSampleNumber()));
     }
+
+    void printChannelData (int ChannelNum) {
+        Channel C=channels.get(0);
+        Float[] f=binFileIO.readChannelData(C.getSampleNumber(),binFileIO.getDataLength(),fileHeader.getHeaderSize()+1);
+        for (int i=0; i<f.length; i++) {
+            System.out.println(i+".sample: "+f[i].toString());
+
+        }
+    }
+
 }

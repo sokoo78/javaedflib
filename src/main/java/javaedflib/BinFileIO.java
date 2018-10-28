@@ -3,6 +3,7 @@ package javaedflib;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.file.StandardOpenOption;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -324,26 +325,33 @@ class BinFileIO {
         }
     }
 
-    Float[] readChannelData (int sampleNum, int byteNum, int offset) {
+    Float[] readChannelData (long sampleNum, int byteNum, int offset) {
 
-        int lenght=sampleNum*byteNum;
-        byte[] bytes=new byte[byteNum] ;
+        int length = (int) sampleNum * byteNum;
+
+        byte[] bytes = new byte[byteNum];
         float value;
-        Float[] values=new Float[sampleNum];
-    ByteBuffer sampleBytes=ByteBuffer.allocate(lenght);
-    sampleBytes=inputFile.ReadBytes(offset,lenght);
-        //int position=0;
-        //sampleBytes.position(position+byteNum);
+        Float[] values = new Float[(int) sampleNum];
 
-    for (int s=0; s<sampleNum; s++) {
-        for (int b=0; b<byteNum; b++ ) {
 
-            sampleBytes.get(bytes);
-            value=bytes[0]+bytes[1]*255;
-            values[s]=value;
-            sampleBytes.position(sampleBytes.position()+byteNum);
+        ByteBuffer sampleBytes = ByteBuffer.allocate(length);
+        sampleBytes.order(ByteOrder.LITTLE_ENDIAN);
+        sampleBytes = inputFile.ReadBytes(offset, length);
+        try {
+
+            for (int s = 0; s < sampleNum; s++) {
+
+                    sampleBytes.get(bytes);
+                    value = bytes[0] + bytes[1] * 255;
+                    values[s] = value;
+
+            }
         }
+        catch (Exception e)
+        {e.printStackTrace();}
+            return values;
+
     }
-        return values;
-    }
+
+
 }
