@@ -29,24 +29,7 @@ class Channel {
     ChannelHeader getChannelHeader() {
         return channelHeader;
     }
-    /*
-    public int getStartTimeSlot() {
-        return startTimeSlot;
-    }
 
-    public void setStartTimeSlot(int startTimeSlot) {
-        this.startTimeSlot = startTimeSlot;
-    }
-
-    public int getEndTimeSlot() {
-        return this.endTimeSlot;
-    }
-
-    public void setEndTimeSlot(int endTimeSlot) {
-        this.endTimeSlot=endTimeSlot;
-    }
-
-*/
     public float[] getSignals() {
         return signals;
     }
