@@ -4,14 +4,10 @@ import java.util.TreeMap;
 
 class Channel {
     private ChannelHeader channelHeader;
-    int timeSlotOffset;
-    float[] signals;
-    int[] trigger;
+    private int timeSlotOffset;
+    private float[] signals;
+    private int[] trigger;
     TreeMap<Integer,Float[]> ChannelData;
-
-    Channel(ChannelHeader channelHeader) {
-        this.channelHeader = channelHeader;
-    }
 
     Channel(ChannelHeader channelHeader, int timeSlotOffset) {
         this.channelHeader = channelHeader;
@@ -30,27 +26,24 @@ class Channel {
         return channelHeader;
     }
 
-    public float[] getSignals() {
+    float[] getSignals() {
         return signals;
     }
 
-    public void setSignals(float[] signals) {
+    void setSignals(float[] signals) {
         this.signals = signals;
     }
 
-    public int[] getTrigger() {
+    int[] getTrigger() {
         return trigger;
     }
 
-    public void setTrigger(int[] trigger) {
+    void setTrigger(int[] trigger) {
         this.trigger = trigger;
     }
 
-    public int getTimeSlotOffset() {
+    int getTimeSlotOffset() {
         return this.timeSlotOffset;
     }
 
-    public  void setTimeSlotOffset(int timeSlotOffset) {
-        this.timeSlotOffset=timeSlotOffset;
-    }
 }

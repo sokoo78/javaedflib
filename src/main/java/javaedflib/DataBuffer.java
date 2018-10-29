@@ -57,7 +57,9 @@ class DataBuffer {
     }
 
     void PrintChannelLabels() {
-        channels.forEach((key,value)->System.out.println("Channel[" + key + "] label : " + value.getName() + " SampleNumber : " + value.getNumberOfSamples() + " Offset in timeslot: "+value.getTimeSlotOffset()));
+        channels.forEach((key,value)->System.out.println("Channel[" + key + "] label : "
+                + value.getName() + " SampleNumber : " + value.getNumberOfSamples()
+                + " Offset in timeslot: "+value.getTimeSlotOffset()));
     }
 
     void printChannelData (int channelNumber) {
