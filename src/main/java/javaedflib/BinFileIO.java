@@ -19,7 +19,7 @@ class BinFileIO {
     BinFileIO(String path) {
         inputFile = new BinFile(path);
         setFileType();
-        setSignalDataLength();
+        setSignalByteSize();
     }
 
     FileHeader ReadFileHeader() {
@@ -324,7 +324,7 @@ class BinFileIO {
         return signalByteSize;
     }
 
-    private void setSignalDataLength() {
+    private void setSignalByteSize() {
         switch (fileType) {
             case "EDF" : signalByteSize = 2;
                 break;

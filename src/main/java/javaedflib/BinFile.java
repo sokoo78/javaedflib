@@ -20,8 +20,6 @@ class BinFile {
         try (FileChannel fileChannel = new FileInputStream(path).getChannel().position(offset)) {
             fileChannel.read(byteBuffer);
             byteBuffer.flip(); // Switch buffer to read only mode
-
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
