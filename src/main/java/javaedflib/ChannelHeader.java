@@ -20,7 +20,7 @@ class ChannelHeader {
     /** EDF/BDF Pre-filtering description (80 bytes), e.g. BDF: "HP:DC; LP:410", EDF: "HP:0,16; LP:500" */
     private String preFilteringInfo;
     /** EDF/BDF  Number of samples in each data record. (Sample-rate if Duration of data record = "1") */
-    private long numberOfSamples;
+    private int numberOfSamples;
     /** EDF/BDF Reserved (32 bytes) */
     private String reserved;
 
@@ -89,11 +89,11 @@ class ChannelHeader {
         this.preFilteringInfo = preFilteringInfo;
     }
 
-    long getNumberOfSamples() {
+    int getNumberOfSamples() {
         return numberOfSamples;
     }
 
-    void setNumberOfSamples(long numberOfSamples) {
+    void setNumberOfSamples(int numberOfSamples) {
         this.numberOfSamples = numberOfSamples;
     }
 

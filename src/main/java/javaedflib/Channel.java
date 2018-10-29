@@ -1,18 +1,14 @@
 package javaedflib;
 
-
 import java.util.TreeMap;
 
 class Channel {
     private ChannelHeader channelHeader;
-
     int startTimeSlot;
     int endTimeSlot;
     float[] signals;
     int[] trigger;
     TreeMap<Integer,Float[]> ChannelData;
-
-
 
     Channel(ChannelHeader channelHeader) {
         this.channelHeader = channelHeader;
@@ -22,7 +18,7 @@ class Channel {
         return channelHeader.getLabelOfChannel();
     }
 
-    long getSampleNumber() {
+    int getNumberOfSamples() {
         return channelHeader.getNumberOfSamples();
     }
 
@@ -45,7 +41,6 @@ class Channel {
     public void setEndTimeSlot(int endTimeSlot) {
         this.endTimeSlot=endTimeSlot;
     }
-
 
     public float[] getSignals() {
         return signals;
