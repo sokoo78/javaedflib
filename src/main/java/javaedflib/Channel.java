@@ -4,14 +4,18 @@ import java.util.TreeMap;
 
 class Channel {
     private ChannelHeader channelHeader;
-    int startTimeSlot;
-    int endTimeSlot;
+    int timeSlotOffset;
     float[] signals;
     int[] trigger;
     TreeMap<Integer,Float[]> ChannelData;
 
     Channel(ChannelHeader channelHeader) {
         this.channelHeader = channelHeader;
+    }
+
+    Channel(ChannelHeader channelHeader, int timeSlotOffset) {
+        this.channelHeader = channelHeader;
+        this.timeSlotOffset = timeSlotOffset;
     }
 
     String getName() {
@@ -25,7 +29,7 @@ class Channel {
     ChannelHeader getChannelHeader() {
         return channelHeader;
     }
-
+    /*
     public int getStartTimeSlot() {
         return startTimeSlot;
     }
@@ -42,6 +46,7 @@ class Channel {
         this.endTimeSlot=endTimeSlot;
     }
 
+*/
     public float[] getSignals() {
         return signals;
     }
@@ -58,5 +63,11 @@ class Channel {
         this.trigger = trigger;
     }
 
+    public int getTimeSlotOffset() {
+        return this.timeSlotOffset;
+    }
 
+    public  void setTimeSlotOffset(int timeSlotOffset) {
+        this.timeSlotOffset=timeSlotOffset;
+    }
 }

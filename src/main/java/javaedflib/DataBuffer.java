@@ -8,6 +8,7 @@ class DataBuffer {
     private BinFileIO binFileIO;
     private FileHeader fileHeader;
     private Map<Integer, Channel> channels = new HashMap<>();
+    private int timeSlotSize;
 
     DataBuffer(String path) {
         binFileIO = new BinFileIO(path);
@@ -17,9 +18,12 @@ class DataBuffer {
 
     private void InitializeChannels() {
         Map<Integer, ChannelHeader> channelHeaders = binFileIO.ReadChannelHeaders(fileHeader.getNumberOfChannels());
+        int offset=0;
         for (int i = 0; i < channelHeaders.size(); i++) {
-            channels.put(i, new Channel(channelHeaders.get(i)));
+            channels.put(i, new Channel(channelHeaders.get(i), offset));
+            offset+=channelHeaders.get(i).getNumberOfSamples() * binFileIO.getSignalDataLength();
         }
+        timeSlotSize=offset;
     }
 
     private String GetFileVersion() {
@@ -53,7 +57,7 @@ class DataBuffer {
     }
 
     void PrintChannelLabels() {
-        channels.forEach((key,value)->System.out.println("Channel[" + key + "] label : " + value.getName() + " SampleNumber : " + value.getNumberOfSamples()));
+        channels.forEach((key,value)->System.out.println("Channel[" + key + "] label : " + value.getName() + " SampleNumber : " + value.getNumberOfSamples() + " Offset in timeslot: "+value.getTimeSlotOffset()));
     }
 
     void printChannelData (int channelNumber) {
@@ -64,4 +68,6 @@ class DataBuffer {
             System.out.println(i + 1 + ". sample: " + signals[i]);
         }
     }
+
+
 }
