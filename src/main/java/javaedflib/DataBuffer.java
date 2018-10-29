@@ -18,12 +18,12 @@ class DataBuffer {
 
     private void InitializeChannels() {
         Map<Integer, ChannelHeader> channelHeaders = binFileIO.ReadChannelHeaders(fileHeader.getNumberOfChannels());
-        int offset=0;
-        for (int i = 0; i < channelHeaders.size(); i++) {
-            channels.put(i, new Channel(channelHeaders.get(i), offset));
-            offset+=channelHeaders.get(i).getNumberOfSamples() * binFileIO.getSignalDataLength();
+        int timeSlotOffset = 0;
+        for (int channelNumber = 0; channelNumber < channelHeaders.size(); channelNumber++) {
+            channels.put(channelNumber, new Channel(channelHeaders.get(channelNumber), timeSlotOffset));
+            timeSlotOffset += channelHeaders.get(channelNumber).getNumberOfSamples() * binFileIO.getSignalDataLength();
         }
-        timeSlotSize=offset;
+        timeSlotSize = timeSlotOffset;
     }
 
     private String GetFileVersion() {
@@ -68,6 +68,4 @@ class DataBuffer {
             System.out.println(i + 1 + ". sample: " + signals[i]);
         }
     }
-
-
 }
