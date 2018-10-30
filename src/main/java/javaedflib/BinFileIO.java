@@ -15,6 +15,7 @@ class BinFileIO {
     private BinFile outputFile;
     private String fileType;
     private int signalByteSize;
+    private int timeSlotSize;
 
     BinFileIO(String path) {
         inputFile = new BinFile(path);
@@ -61,6 +62,14 @@ class BinFileIO {
         fileHeader.setNumberOfChannels(Integer.valueOf(new String(numberOfSignals).trim()));
 
         return fileHeader;
+    }
+
+    void setTimeSlotSize(int timeSlotSize) {
+        this.timeSlotSize=timeSlotSize;
+    }
+
+    int getTimeSlotSize() {
+        return this.timeSlotSize;
     }
 
     Map<Integer, ChannelHeader> ReadChannelHeaders(int numberOfChannels) {
@@ -243,6 +252,7 @@ class BinFileIO {
     }
 
     Float[] readChannelData(int sampleNumber, int offset) {
+
         int length = sampleNumber * signalByteSize;
         byte[] bytes = new byte[signalByteSize];
         float value;
@@ -262,6 +272,33 @@ class BinFileIO {
         return values;
     }
 
+    Float[] readChannelData(int sampleNumber, int offset, int timeFrame) {
+        int length = sampleNumber * signalByteSize;
+        int signalArraySize=0;
+        byte[] bytes = new byte[signalByteSize];
+        float value;
+        Float[] values = new Float[sampleNumber*timeFrame];
+        ByteBuffer sampleBytes = ByteBuffer.allocate(length);
+        sampleBytes.order(ByteOrder.LITTLE_ENDIAN);
+        try {
+            for (int tf = 0; tf < timeFrame; tf++) {
+                sampleBytes = inputFile.ReadBytes(offset, length);
+                for (int s = 0; s < sampleNumber; s++) {
+                    sampleBytes.get(bytes);
+                    value = bytes[0] + bytes[1] * 255;
+                    values[signalArraySize] = value;
+                    signalArraySize++;
+
+                }
+                offset += getTimeSlotSize();
+                sampleBytes.rewind();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    return values;
+    }
     /**
      * @param length specifies the byte array length in bytes
      * @return returns a byte array which bytes are all set to be ascii space
@@ -333,4 +370,6 @@ class BinFileIO {
             default : signalByteSize = 2;
         }
     }
+
+
 }

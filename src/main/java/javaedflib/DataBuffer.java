@@ -8,7 +8,7 @@ class DataBuffer {
     private BinFileIO binFileIO;
     private FileHeader fileHeader;
     private Map<Integer, Channel> channels = new HashMap<>();
-    private int timeSlotSize;
+
 
     DataBuffer(String path) {
         binFileIO = new BinFileIO(path);
@@ -23,7 +23,7 @@ class DataBuffer {
             channels.put(channelNumber, new Channel(channelHeaders.get(channelNumber), timeSlotOffset));
             timeSlotOffset += channelHeaders.get(channelNumber).getNumberOfSamples() * binFileIO.getSignalDataLength();
         }
-        timeSlotSize = timeSlotOffset;
+        binFileIO.setTimeSlotSize(timeSlotOffset);
     }
 
     private String GetFileVersion() {
@@ -62,6 +62,14 @@ class DataBuffer {
                 + " Offset in timeslot: "+value.getTimeSlotOffset()));
     }
 
+    int getChannelOffsetInTimeSlot (int channelNum) {
+        int offset=0;
+        for (int i=0; i<=channelNum; i++) {
+            offset+=channels.get(i).getTimeSlotOffset();
+        }
+        return offset;
+    }
+
     void printChannelData (int channelNumber) {
         int sampleNumber = channels.get(channelNumber).getNumberOfSamples();
         int offset = fileHeader.getHeaderSize() + 1;
@@ -70,4 +78,18 @@ class DataBuffer {
             System.out.println(i + 1 + ". sample: " + signals[i]);
         }
     }
+void printChannelData (int channelNumber, int startTimeSlot, int endTimeSlot) {
+    int sampleNumber = channels.get(channelNumber).getNumberOfSamples();
+    if (endTimeSlot==0 || endTimeSlot>fileHeader.getNumberOfDataRecords() ) {
+        endTimeSlot=fileHeader.getNumberOfDataRecords();
+    }
+
+    int timeFrame = endTimeSlot - startTimeSlot;
+    int offset = fileHeader.getHeaderSize() + getChannelOffsetInTimeSlot(channelNumber) + (startTimeSlot * channels.get(channelNumber).getTimeSlotOffset()) + 1;
+    Float[] signals = binFileIO.readChannelData(sampleNumber, offset, timeFrame);
+    for (int i = 0; i < signals.length; i++) {
+        System.out.println(i + 1 + ". sample: " + signals[i]);
+    }
+}
+
 }
