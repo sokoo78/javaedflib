@@ -64,14 +64,6 @@ class BinFileIO {
         return fileHeader;
     }
 
-    void setTimeSlotSize(int timeSlotSize) {
-        this.timeSlotSize=timeSlotSize;
-    }
-
-    int getTimeSlotSize() {
-        return this.timeSlotSize;
-    }
-
     Map<Integer, ChannelHeader> ReadChannelHeaders(int numberOfChannels) {
         Map<Integer, ChannelHeader> channelHeaders = new HashMap<>();
         ByteBuffer buffer = inputFile.ReadBytes(256, 256 * numberOfChannels);
@@ -261,10 +253,10 @@ class BinFileIO {
         sampleBytes.order(ByteOrder.LITTLE_ENDIAN);
         sampleBytes = inputFile.ReadBytes(offset, length);
         try {
-            for (int s = 0; s < sampleNumber; s++) {
+            for (int i = 0; i < sampleNumber; i++) {
                     sampleBytes.get(bytes);
                     value = bytes[0] + bytes[1] * 255;
-                    values[s] = value;
+                    values[i] = value;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -272,33 +264,36 @@ class BinFileIO {
         return values;
     }
 
-    Float[] readChannelData(int sampleNumber, int offset, int timeFrame) {
-        int length = sampleNumber * signalByteSize;
-        int signalArraySize=0;
+    float[] readChannelData(int sampleNumber, int offset, int timeFrame) {
         byte[] bytes = new byte[signalByteSize];
-        float value;
-        Float[] values = new Float[sampleNumber*timeFrame];
+        int length = sampleNumber * signalByteSize;
         ByteBuffer sampleBytes = ByteBuffer.allocate(length);
         sampleBytes.order(ByteOrder.LITTLE_ENDIAN);
-        try {
-            for (int tf = 0; tf < timeFrame; tf++) {
-                sampleBytes = inputFile.ReadBytes(offset, length);
-                for (int s = 0; s < sampleNumber; s++) {
-                    sampleBytes.get(bytes);
-                    value = bytes[0] + bytes[1] * 255;
-                    values[signalArraySize] = value;
-                    signalArraySize++;
-
-                }
-                offset += getTimeSlotSize();
-                sampleBytes.rewind();
+        float[] values = new float[sampleNumber * timeFrame];
+        int signalArraySize = 0;
+        for (int i = 0; i < timeFrame; i++) {
+            sampleBytes = inputFile.ReadBytes(offset, length);
+            for (int j = 0; j < sampleNumber; j++) {
+                sampleBytes.get(bytes);
+                float value = bytes[0] + bytes[1] * 255;
+                values[signalArraySize] = value;
+                signalArraySize++;
             }
+            offset += timeSlotSize;
+            sampleBytes.rewind();
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    return values;
+        sampleBytes.clear();
+        return values;
     }
+
+    void setTimeSlotSize(int timeSlotSize) {
+        this.timeSlotSize = timeSlotSize;
+    }
+
+    private int getTimeSlotSize() {
+        return this.timeSlotSize;
+    }
+
     /**
      * @param length specifies the byte array length in bytes
      * @return returns a byte array which bytes are all set to be ascii space
@@ -370,6 +365,4 @@ class BinFileIO {
             default : signalByteSize = 2;
         }
     }
-
-
 }

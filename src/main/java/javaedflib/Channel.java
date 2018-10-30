@@ -1,13 +1,10 @@
 package javaedflib;
 
-import java.util.TreeMap;
-
 class Channel {
     private ChannelHeader channelHeader;
     private int timeSlotOffset;
     private float[] signals;
     private int[] trigger;
-    TreeMap<Integer,Float[]> ChannelData;
 
     Channel(ChannelHeader channelHeader, int timeSlotOffset) {
         this.channelHeader = channelHeader;
