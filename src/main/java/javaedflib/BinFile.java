@@ -24,7 +24,6 @@ class BinFile {
             ex.printStackTrace();
         }
         return byteBuffer;
-
     }
 
     void WriteBytes(byte[] bytes, StandardOpenOption mode) {

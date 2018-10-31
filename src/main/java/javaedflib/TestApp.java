@@ -18,12 +18,12 @@ public class TestApp {
         //String outputPath = System.getProperty("user.dir") + "\\src\\main\\test_output.edf";
         //dataBuffer.WriteFileHeader(outputPath);
 
-        // Test signal reading with channel selection TODO fails on channel 5
-        dataBuffer.readChannelData(15,0,0);
-        dataBuffer.printChannelData(15);
+        // Test signal reading with channel selection
+        //dataBuffer.readChannelData(15,0,0);
+        //dataBuffer.printChannelData(15);
 
         // Test signal reading for all channels
-        //dataBuffer.readAllChannelData(0, 3);
-        //dataBuffer.printAllChannelData();
+        dataBuffer.readAllChannelData(0, 0);
+        dataBuffer.printAllChannelData();
     }
 }

@@ -243,27 +243,6 @@ class BinFileIO {
         outputFile.WriteBytes(binaryHeaders, StandardOpenOption.APPEND);
     }
 
-    Float[] readChannelData(int sampleNumber, int offset) {
-
-        int length = sampleNumber * signalByteSize;
-        byte[] bytes = new byte[signalByteSize];
-        float value;
-        Float[] values = new Float[sampleNumber];
-        ByteBuffer sampleBytes = ByteBuffer.allocate(length);
-        sampleBytes.order(ByteOrder.LITTLE_ENDIAN);
-        sampleBytes = inputFile.ReadBytes(offset, length);
-        try {
-            for (int i = 0; i < sampleNumber; i++) {
-                    sampleBytes.get(bytes);
-                    value = bytes[0] + bytes[1] * 255;
-                    values[i] = value;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return values;
-    }
-
     float[] readChannelData(int sampleNumber, int offset, int timeFrame) {
         byte[] bytes = new byte[signalByteSize];
         int length = sampleNumber * signalByteSize;
