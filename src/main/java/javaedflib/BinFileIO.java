@@ -272,6 +272,7 @@ class BinFileIO {
         float[] values = new float[sampleNumber * timeFrame];
         int signalArraySize = 0;
         for (int i = 0; i < timeFrame; i++) {
+
             sampleBytes = inputFile.ReadBytes(offset, length);
             for (int j = 0; j < sampleNumber; j++) {
                 sampleBytes.get(bytes);

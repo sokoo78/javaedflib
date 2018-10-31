@@ -65,9 +65,9 @@ class DataBuffer {
 
     private int getChannelOffsetInTimeSlot(int channelNumber) {
         int offset = 0;
-        for (int channel = 0; channel <= channelNumber; channel++) {
-            offset += channels.get(channel).getTimeSlotOffset();
-        }
+
+            offset = channels.get(channelNumber).getTimeSlotOffset();
+
         return offset;
     }
 
@@ -78,7 +78,9 @@ class DataBuffer {
 
         int timeFrame = endTimeSlot - startTimeSlot;
         int offset = fileHeader.getHeaderSize() + getChannelOffsetInTimeSlot(channelNumber)
-                + (startTimeSlot * channels.get(channelNumber).getTimeSlotOffset()) + 1;
+                + (startTimeSlot * channels.get(channelNumber).getTimeSlotOffset());
+
+      //  System.out.println("Sample Number: "+sampleNumber+" Offset: "+offset);
         float[] signals = binFileIO.readChannelData(sampleNumber, offset, timeFrame);
         channels.get(channelNumber).setSignals(signals);
     }
@@ -90,11 +92,13 @@ class DataBuffer {
         }
     }
 
+
     void readAllChannelData (int startTimeSlot, int endTimeSlot) {
         for (int channel = 0; channel < channels.size(); channel++)
         {
-            if (channel == 5) continue;
+           // if (channel == 5) continue;
             readChannelData(channel, startTimeSlot, endTimeSlot);}
+
     }
 
     void printAllChannelData () {
