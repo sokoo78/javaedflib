@@ -1002,8 +1002,6 @@ public class Header{
 
         byte[] dataToRead = new byte[numberSamplesToReadAtOnce * DATA_SIZE];
         while (numberSamplesToRead > 0) {
-
-
             try {
                 inChannel.position(recordPosition);
                 inChannel.read(inBuffer);

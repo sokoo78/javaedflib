@@ -43,4 +43,23 @@ class Channel {
         return this.timeSlotOffset;
     }
 
+    void addSignals(float[] plusSignals) {
+        float[] newSignals=new float[this.signals.length+plusSignals.length];
+        System.arraycopy(this.signals,0,newSignals,0,this.signals.length);
+
+        for (int i=0; i<plusSignals.length;i++) {
+        newSignals[this.signals.length+i]=plusSignals[i];
+        }
+        this.signals=newSignals;
+    }
+
+    float sampleFromDigitalToPhysical (float digiSignal) {
+       float value;
+        value=  (float) (this.channelHeader.getPhysicalMinimum()
+                + (float) ((this.channelHeader.getPhysicalMaximum() - this.channelHeader.getPhysicalMinimum())
+                * (digiSignal - this.channelHeader.getDigitalMinimum()))
+                / (float) ((this.channelHeader.getDigitalMaximum() - this.channelHeader.getDigitalMinimum())));
+return value;
+    }
+
 }

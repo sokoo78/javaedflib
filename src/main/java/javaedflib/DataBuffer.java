@@ -83,24 +83,49 @@ class DataBuffer {
     void printChannelData (int channelNumber) {
         var signals = channels.get(channelNumber).getSignals();
         for (int signal = 0; signal < signals.length; signal++) {
-            System.out.printf("%d. sample: %s%n", signal, signals[signal]);
+            System.out.printf("%d. digital sample: %s | physical sample: %s%n", signal, signals[signal],
+                    channels.get(channelNumber).sampleFromDigitalToPhysical(signals[signal]),
+                    channels.get(channelNumber).getChannelHeader().getPhysicalDimension());
         }
     }
 
     void readAllChannelData (int startTimeSlot, int endTimeSlot) {
-        for (int channel = 0; channel < channels.size(); channel++)
-        {
-           // if (channel == 5) continue;
-            readChannelData(channel, startTimeSlot, endTimeSlot);}
+        int i;
+        int timeFrameDataOffset;
+        int[] channelPos = new int[channels.size()];
+        int offset = fileHeader.getHeaderSize() + (startTimeSlot * binFileIO.getTimeSlotSize());
+        int length = (endTimeSlot-startTimeSlot)*binFileIO.getTimeSlotSize();
+        float[] timeFrameData=binFileIO.readTimeFrame(offset,length);
+        timeFrameDataOffset=0;
+        for (int timeSlot=0; timeSlot<endTimeSlot-startTimeSlot;timeSlot++) {
+            for (int channel = 0; channel < channels.size(); channel++) {
+            i=0;
+            float[] channelData=new float[channels.get(channel).getNumberOfSamples()];
+            while (i<channelData.length){
 
+            channelData[i]=timeFrameData[timeFrameDataOffset];
+                i++;
+                timeFrameDataOffset++;
+            }
+            if (channels.get(channel).getSignals()==null) {
+                channels.get(channel).setSignals(channelData);
+            } else {
+                channels.get(channel).addSignals(channelData);
+            }
+            }
+        }
     }
 
     void printAllChannelData () {
         for (int channel = 0; channel < channels.size(); channel++) {
             var signals = channels.get(channel).getSignals();
             for (int signal = 0; signal < signals.length; signal++) {
-                System.out.printf("%d. channel | %d. sample: %s%n", channel, signal, signals[signal]);
+                System.out.printf("%d. channel | %d. digital sample: %s | physical sample: %s %s%n", channel, signal,
+                        signals[signal], channels.get(channel).sampleFromDigitalToPhysical(signals[signal]),
+                        channels.get(channel).getChannelHeader().getPhysicalDimension());
+
             }
         }
     }
+
 }

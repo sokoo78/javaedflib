@@ -19,11 +19,11 @@ public class TestApp {
         //dataBuffer.WriteFileHeader(outputPath);
 
         // Test signal reading with channel selection
-        //dataBuffer.readChannelData(15,0,0);
-        //dataBuffer.printChannelData(15);
+      //  dataBuffer.readChannelData(7,0,1);
+        //dataBuffer.printChannelData(7);
 
         // Test signal reading for all channels
-        dataBuffer.readAllChannelData(0, 0);
+       dataBuffer.readAllChannelData(0, 2);
         dataBuffer.printAllChannelData();
     }
 }

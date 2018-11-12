@@ -255,7 +255,7 @@ class BinFileIO {
             sampleBytes = inputFile.ReadBytes(offset, length);
             for (int j = 0; j < sampleNumber; j++) {
                 sampleBytes.get(bytes);
-                float value = bytes[0] + bytes[1] * 255;
+                float value = (bytes[0] & 255) | ((bytes[1] & 255)<<8);
                 values[signalArraySize] = value;
                 signalArraySize++;
             }
@@ -266,13 +266,32 @@ class BinFileIO {
         return values;
     }
 
+
+    float[] readTimeFrame(int offset, int length) {
+        byte[] bytes = new byte[signalByteSize];
+        int signalArraySize=0;
+        ByteBuffer timeFrameBytes = ByteBuffer.allocate(length);
+        timeFrameBytes.order(ByteOrder.LITTLE_ENDIAN);
+        float[] values = new float[length/2];
+        timeFrameBytes=inputFile.ReadBytes(offset,length);
+        for (int i=0; i<values.length; i++) {
+            timeFrameBytes.get(bytes);
+            float value = (bytes[0] & 255) | ((bytes[1] & 255)<<8);
+            values[signalArraySize]=value;
+            signalArraySize++;
+        }
+        return values;
+    }
+
     void setTimeSlotSize(int timeSlotSize) {
         this.timeSlotSize = timeSlotSize;
     }
 
-    private int getTimeSlotSize() {
+    int getTimeSlotSize() {
         return this.timeSlotSize;
     }
+
+
 
     /**
      * @param length specifies the byte array length in bytes
