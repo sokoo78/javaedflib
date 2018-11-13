@@ -244,6 +244,7 @@ class BinFileIO {
     }
 
     float[] readChannelData(int sampleNumber, int offset, int timeFrame) {
+        float value;
         byte[] bytes = new byte[signalByteSize];
         int length = sampleNumber * signalByteSize;
         ByteBuffer sampleBytes = ByteBuffer.allocate(length);
@@ -255,7 +256,18 @@ class BinFileIO {
             sampleBytes = inputFile.ReadBytes(offset, length);
             for (int j = 0; j < sampleNumber; j++) {
                 sampleBytes.get(bytes);
-                float value = (bytes[0] & 255) | ((bytes[1] & 255)<<8);
+                switch(signalByteSize) {
+                    case 2:
+                        value = (bytes[0] & 255) | ((bytes[1] & 255) << 8);
+                        break;
+                    case 3:
+                        value = (bytes[0] & 255) | ((bytes[1] & 255) << 8) | ((bytes[1] & 255) << 16);
+                        break;
+                    default:
+                        value = (bytes[0] & 255) | ((bytes[1] & 255) << 8);
+                        break;
+
+                }
                 values[signalArraySize] = value;
                 signalArraySize++;
             }
@@ -268,6 +280,7 @@ class BinFileIO {
 
 
     float[] readTimeFrame(int offset, int length) {
+        float value;
         byte[] bytes = new byte[signalByteSize];
         int signalArraySize=0;
         ByteBuffer timeFrameBytes = ByteBuffer.allocate(length);
@@ -276,7 +289,19 @@ class BinFileIO {
         timeFrameBytes=inputFile.ReadBytes(offset,length);
         for (int i=0; i<values.length; i++) {
             timeFrameBytes.get(bytes);
-            float value = (bytes[0] & 255) | ((bytes[1] & 255)<<8);
+            //float value = (bytes[0] & 255) | ((bytes[1] & 255)<<8);
+            switch(signalByteSize) {
+                case 2:
+                    value = (bytes[0] & 255) | ((bytes[1] & 255) << 8);
+                    break;
+                case 3:
+                    value = (bytes[0] & 255) | ((bytes[1] & 255) << 8) | ((bytes[1] & 255) << 16);
+                    break;
+                default:
+                    value = (bytes[0] & 255) | ((bytes[1] & 255) << 8);
+                    break;
+
+            }
             values[signalArraySize]=value;
             signalArraySize++;
         }

@@ -94,6 +94,8 @@ class DataBuffer {
         int timeFrameDataOffset;
         int[] channelPos = new int[channels.size()];
         int offset = fileHeader.getHeaderSize() + (startTimeSlot * binFileIO.getTimeSlotSize());
+        if (endTimeSlot == 0 || endTimeSlot > fileHeader.getNumberOfDataRecords())
+            endTimeSlot = fileHeader.getNumberOfDataRecords();
         int length = (endTimeSlot-startTimeSlot)*binFileIO.getTimeSlotSize();
         float[] timeFrameData=binFileIO.readTimeFrame(offset,length);
         timeFrameDataOffset=0;
