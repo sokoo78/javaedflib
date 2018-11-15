@@ -122,9 +122,10 @@ class DataBuffer {
         for (int channel = 0; channel < channels.size(); channel++) {
             var signals = channels.get(channel).getSignals();
             for (int signal = 0; signal < signals.length; signal++) {
-                System.out.printf("%d. channel | %d. digital sample: %s | physical sample: %s %s%n", channel, signal,
+                System.out.printf("%d. channel | %d. digital sample: %s | physical sample: %s %s | converted digital sample: %s%n", channel, signal,
                         signals[signal], channels.get(channel).sampleFromDigitalToPhysical(signals[signal]),
-                        channels.get(channel).getChannelHeader().getPhysicalDimension());
+                        channels.get(channel).getChannelHeader().getPhysicalDimension(),
+                        channels.get(channel).sampleFromPhysicalToDigital((channels.get(channel).sampleFromDigitalToPhysical(signals[signal]))));
 
             }
         }

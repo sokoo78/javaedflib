@@ -62,4 +62,37 @@ class Channel {
 return value;
     }
 
+
+    float sampleFromPhysicalToDigital (float physicalSignal) {
+        float value;
+
+        value=(float) this.channelHeader.getDigitalMinimum()
+                + (((float)(this.channelHeader.getDigitalMaximum()-this.channelHeader.getDigitalMinimum()))
+                *(physicalSignal-(float) this.channelHeader.getPhysicalMinimum()))
+                /(float) (this.channelHeader.getPhysicalMaximum()-this.channelHeader.getPhysicalMinimum());
+        return value;
+    }
+
+    byte[] digitalSignalToBytes (float value, int signalByteSize){
+    String hexData;
+    byte[] backBytes=new byte[signalByteSize];
+        hexData=Integer.toString((int)value,16);
+        switch (signalByteSize) {
+            case 2:
+                hexData = "0000".substring(hexData.length()) + hexData;
+                break;
+            case 3:
+                hexData = "000000".substring(hexData.length()) + hexData;
+                break;
+            default :
+                hexData = "0000".substring(hexData.length()) + hexData;
+                break;
+        }
+        for (int b=0;b<signalByteSize ;b++) {
+        backBytes[b]=Byte.valueOf(hexData.substring(hexData.length()- signalByteSize));
+        hexData=hexData.substring(0,signalByteSize);
+
+    }
+    return backBytes;
+    }
 }
