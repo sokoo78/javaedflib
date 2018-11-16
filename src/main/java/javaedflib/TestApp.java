@@ -6,7 +6,7 @@ public class TestApp {
 
     public static void main(String[] args) throws IOException {
 
-        // Create class to hold data
+        // Create object to hold data
         String inputPath = System.getProperty("user.dir") + "\\src\\main\\test_generator.edf";
        // String inputPath = System.getProperty("user.dir") + "\\src\\main\\Newtest17-256.bdf";
         var dataBuffer = new DataBuffer(inputPath);
@@ -24,7 +24,7 @@ public class TestApp {
         dataBuffer.printChannelData(7);
 
         // Test signal reading for all channels
-     //  dataBuffer.readAllChannelData(0, 0);
-      //  dataBuffer.printAllChannelData();
+        //dataBuffer.readAllChannelData(0, 0);
+        //dataBuffer.printAllChannelData();
     }
 }

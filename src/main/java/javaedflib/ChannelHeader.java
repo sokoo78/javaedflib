@@ -105,5 +105,4 @@ class ChannelHeader {
         this.reserved = reserved;
     }
 
-
 }

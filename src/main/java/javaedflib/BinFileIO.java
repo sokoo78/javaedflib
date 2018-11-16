@@ -245,8 +245,6 @@ class BinFileIO {
 
     float[] readChannelData(int sampleNumber, int offset, int timeFrame)  {
         float value;
-        String hexData;
-        byte[] backbytes=new byte[signalByteSize];
         byte[] bytes = new byte[signalByteSize];
         int length = sampleNumber * signalByteSize;
         ByteBuffer sampleBytes = ByteBuffer.allocate(length);
@@ -254,22 +252,10 @@ class BinFileIO {
         float[] values = new float[sampleNumber * timeFrame];
         int signalArraySize = 0;
         for (int i = 0; i < timeFrame; i++) {
-
             sampleBytes = inputFile.ReadBytes(offset, length);
             for (int j = 0; j < sampleNumber; j++) {
                 sampleBytes.get(bytes);
-                switch(signalByteSize) {
-                    case 2:
-                        value = (bytes[0] & 255) | ((bytes[1] & 255) << 8);
-                        break;
-                    case 3:
-                        value = (bytes[0] & 255) | ((bytes[1] & 255) << 8) | ((bytes[1] & 255) << 16);
-                        break;
-                    default:
-                        value = (bytes[0] & 255) | ((bytes[1] & 255) << 8);
-                        break;
-
-                }
+                value = getSignalValue(bytes);
                 values[signalArraySize] = value;
                 signalArraySize++;
             }
@@ -280,9 +266,7 @@ class BinFileIO {
         return values;
     }
 
-
     float[] readTimeFrame(int offset, int length)  {
-        float value;
         byte[] bytes = new byte[signalByteSize];
         int signalArraySize=0;
         ByteBuffer timeFrameBytes = ByteBuffer.allocate(length);
@@ -291,23 +275,27 @@ class BinFileIO {
         timeFrameBytes=inputFile.ReadBytes(offset,length);
         for (int i=0; i<values.length; i++) {
             timeFrameBytes.get(bytes);
-            //float value = (bytes[0] & 255) | ((bytes[1] & 255)<<8);
-            switch(signalByteSize) {
-                case 2:
-                    value = (bytes[0] & 255) | ((bytes[1] & 255) << 8);
-                    break;
-                case 3:
-                    value = (bytes[0] & 255) | ((bytes[1] & 255) << 8) | ((bytes[1] & 255) << 16);
-                    break;
-                default:
-                    value = (bytes[0] & 255) | ((bytes[1] & 255) << 8);
-                    break;
-
-            }
+            float value = getSignalValue(bytes);
             values[signalArraySize]=value;
             signalArraySize++;
         }
         return values;
+    }
+
+    private float getSignalValue(byte[] bytes) {
+        float value;
+        switch(signalByteSize) {
+            case 2: // EDF format
+                value = (bytes[0] & 255) | ((bytes[1] & 255) << 8);
+                break;
+            case 3: // BDF format
+                value = (bytes[0] & 255) | ((bytes[1] & 255) << 8) | ((bytes[1] & 255) << 16);
+                break;
+            default:
+                value = (bytes[0] & 255) | ((bytes[1] & 255) << 8);
+                break;
+        }
+        return value;
     }
 
     void setTimeSlotSize(int timeSlotSize) {
@@ -317,8 +305,6 @@ class BinFileIO {
     int getTimeSlotSize() {
         return this.timeSlotSize;
     }
-
-
 
     /**
      * @param length specifies the byte array length in bytes
