@@ -27,6 +27,14 @@ class Channel {
         return signals;
     }
 
+    float[] getSignalsTimeFrame(int start, int length) {
+        float[] retSignals=new float[length];
+        for (int i=0;i<length; i++) {
+            retSignals[i]=signals[start+i];
+        }
+        return retSignals;
+    }
+
     void setSignals(float[] signals) {
         this.signals = signals;
     }
@@ -67,25 +75,5 @@ class Channel {
         return value;
     }
 
-    byte[] digitalSignalToBytes (float value, int signalByteSize){
-        String hexData;
-        byte[] backBytes=new byte[signalByteSize];
-        hexData=Integer.toString((int)value,16);
-        switch (signalByteSize) {
-            case 2:
-                hexData = "0000".substring(hexData.length()) + hexData;
-                break;
-            case 3:
-                hexData = "000000".substring(hexData.length()) + hexData;
-                break;
-            default :
-                hexData = "0000".substring(hexData.length()) + hexData;
-                break;
-        }
-        for (int b=0;b<signalByteSize ;b++) {
-            backBytes[b]=Byte.valueOf(hexData.substring(hexData.length()- signalByteSize));
-            hexData=hexData.substring(0,signalByteSize);
-        }
-        return backBytes;
-    }
+
 }

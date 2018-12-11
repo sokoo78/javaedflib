@@ -140,8 +140,16 @@ class BinFileIO {
     }
 
     void WriteFileHeader(FileHeader fileHeader, String path) throws IOException {
-
-        byte[] version = fileHeader.getVersion().getBytes();
+byte[] version=new byte[8];
+        if (fileHeader.getVersion().substring(1,8).contentEquals("BIOSEMI")){
+    version[0]=(byte)-1;
+    byte[] bdfVersion=fileHeader.getVersion().substring(1,8).getBytes();
+    for (int ver=0; ver < bdfVersion.length; ver++ ) {
+        version[1+ver]=bdfVersion[ver];
+    }
+} else {
+    version = fileHeader.getVersion().getBytes();
+}
         byte[] patientInfo = fileHeader.getPatientInfo().getBytes();
         byte[] recordingInfo = fileHeader.getRecordingInfo().getBytes();
         byte[] startDate = fileHeader.getStartDate().getBytes();
@@ -243,6 +251,31 @@ class BinFileIO {
         outputFile.WriteBytes(binaryHeaders, StandardOpenOption.APPEND);
     }
 
+    void writeChannelData (float[] data, String path) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        byte[] binaryData = outputStream.toByteArray();
+        outputFile = new BinFile(path);
+        outputFile.WriteBytes(binaryData, StandardOpenOption.APPEND);
+    }
+
+    void writeAllChannelData (float[] data, String path) throws IOException {
+        byte[] binaryData = new byte[(data.length) * 2];
+        int binaryDataPosition = 0;
+        float actData;
+        for (int dataPosition = 0; dataPosition < data.length; dataPosition++) {
+            actData = data[dataPosition];
+            for (int bytenum = getSignalDataLength() - 1; bytenum >= 0; bytenum--) {
+                binaryData[binaryDataPosition] = (byte) (actData / (Math.pow(256, bytenum)));
+                binaryDataPosition++;
+            }
+        }
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            //  byte[] binaryData = outputStream.toByteArray();
+            outputFile = new BinFile(path);
+            outputFile.WriteBytes(binaryData, StandardOpenOption.APPEND);
+        }
+
+
     float[] readChannelData(int sampleNumber, int offset, int timeFrame)  {
         float value;
         byte[] bytes = new byte[signalByteSize];
@@ -289,7 +322,7 @@ class BinFileIO {
                 value = (bytes[0] & 255) | ((bytes[1] & 255) << 8);
                 break;
             case 3: // BDF format
-                value = (bytes[0] & 255) | ((bytes[1] & 255) << 8) | ((bytes[1] & 255) << 16);
+                value = (bytes[0] & 255) | ((bytes[1] & 255) << 8) | ((bytes[2] & 255) << 16);
                 break;
             default:
                 value = (bytes[0] & 255) | ((bytes[1] & 255) << 8);
@@ -376,5 +409,16 @@ class BinFileIO {
                 break;
             default : signalByteSize = 2;
         }
+    }
+
+    byte[] digitalSignalToBytes (float value, int signalByteSize){
+        byte[] backBytes=new byte[signalByteSize];
+
+        for (int b=signalByteSize-1;b>=0 ;b--) {
+
+                backBytes[b] = (byte) (((int)value)/(Math.pow(256,b)));
+
+        }
+        return backBytes;
     }
 }

@@ -64,6 +64,10 @@ class DataBuffer {
     }
 
     void readChannelData (int channelNumber, int startTimeSlot, int endTimeSlot) {
+        /*
+        *
+        * */
+
         int sampleNumber = channels.get(channelNumber).getNumberOfSamples();
 
         if (endTimeSlot == 0 || endTimeSlot > fileHeader.getNumberOfDataRecords())
