@@ -118,16 +118,63 @@ class DataBuffer {
         }
     }
 
+    void writeAllChannelData(String path) throws  IOException {
+        try {
+            float[] dataToWrite;
+            int dataLength = 0;
+            int position = 0;
+            int timeSlot;
+            for (int i = 0; i < channels.size(); i++) {
+                dataLength += channels.get(i).getNumberOfSamples();
+            }
+            dataLength = dataLength * fileHeader.getNumberOfDataRecords() * binFileIO.getSignalDataLength();
+            dataToWrite = new float[dataLength/2];
+
+            int[] channelPosition=new int[channels.size()];
+            for (int cp=0; cp < channelPosition.length; cp++) {
+                channelPosition[cp]=0;
+            }
+
+            for (int datarecords=0; datarecords<fileHeader.getNumberOfDataRecords();datarecords++) { //datarecord
+                for (int channel = 0; channel < channels.size(); channel++) {                       //channel
+                    var signals = channels.get(channel).getSignalsTimeFrame(channelPosition[channel],channels.get(channel).getNumberOfSamples());
+                    for (int signal = 0; signal < signals.length; signal++) {
+                        //channels.get(channel).sampleFromDigitalToPhysical(signals[signal])
+                        dataToWrite[position] = signals[signal];
+                        position++;
+                    }
+                    channelPosition[channel]+=channels.get(channel).getNumberOfSamples();
+                }
+
+            }
+
+            binFileIO.writeAllChannelData(dataToWrite, path);
+        }
+
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     void printAllChannelData () {
+        byte[] bytes=new byte[binFileIO.getSignalDataLength()];
         for (int channel = 0; channel < channels.size(); channel++) {
             var signals = channels.get(channel).getSignals();
             for (int signal = 0; signal < signals.length; signal++) {
-                System.out.printf("%d. channel | %d. digital sample: %s | physical sample: %s %s | converted digital sample: %s%n", channel, signal,
+                bytes=binFileIO.digitalSignalToBytes(channels.get(channel).sampleFromPhysicalToDigital(channels.get(channel).sampleFromDigitalToPhysical(signals[signal])),binFileIO.getSignalDataLength());
+                System.out.printf("%d. channel | %d. digital sample: %s | physical sample: %s %s | converted digital sample: %s| lower byte: %s | upper byte: %s%n", channel, signal,
                         signals[signal], channels.get(channel).sampleFromDigitalToPhysical(signals[signal]),
                         channels.get(channel).getChannelHeader().getPhysicalDimension(),
-                        channels.get(channel).sampleFromPhysicalToDigital((channels.get(channel).sampleFromDigitalToPhysical(signals[signal]))));
+                        channels.get(channel).sampleFromPhysicalToDigital((channels.get(channel).sampleFromDigitalToPhysical(signals[signal]))), bytes[0],bytes[1]);
 
-            }
+
+
+
+                }
+
+
+
         }
     }
 
