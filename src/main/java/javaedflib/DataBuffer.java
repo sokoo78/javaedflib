@@ -132,8 +132,8 @@ class DataBuffer {
                 dataLength += channels.get(i).getNumberOfSamples();
             }
             dataLength = dataLength * fileHeader.getNumberOfDataRecords() * binFileIO.getSignalDataLength();
-            dataToWrite = new float[dataLength/2];
-
+            //dataToWrite = new float[dataLength/2];
+            dataToWrite = new float[dataLength];
             int[] channelPosition=new int[channels.size()];
             for (int cp=0; cp < channelPosition.length; cp++) {
                 channelPosition[cp]=0;
@@ -167,12 +167,17 @@ class DataBuffer {
             var signals = channels.get(channel).getSignals();
             for (int signal = 0; signal < signals.length; signal++) {
                 bytes=binFileIO.digitalSignalToBytes(channels.get(channel).sampleFromPhysicalToDigital(channels.get(channel).sampleFromDigitalToPhysical(signals[signal])),binFileIO.getSignalDataLength());
-                System.out.printf("%d. channel | %d. digital sample: %s | physical sample: %s %s | converted digital sample: %s| lower byte: %s | upper byte: %s%n", channel, signal,
+                System.out.printf("%d. channel | %d. digital sample: %s | physical sample: %s %s | converted digital sample: %s| ", channel, signal,
                         signals[signal], channels.get(channel).sampleFromDigitalToPhysical(signals[signal]),
                         channels.get(channel).getChannelHeader().getPhysicalDimension(),
-                        channels.get(channel).sampleFromPhysicalToDigital((channels.get(channel).sampleFromDigitalToPhysical(signals[signal]))), bytes[0],bytes[1]);
+                        channels.get(channel).sampleFromPhysicalToDigital((channels.get(channel).sampleFromDigitalToPhysical(signals[signal]))) );
+                System.out.printf("Bytes: ");
+                for (int b=0; b<binFileIO.getSignalDataLength();b++) {
+                    System.out.printf("%d. byte : %d | ",b,bytes[b]);
 
 
+                }
+System.out.printf("%n");
 
 
                 }

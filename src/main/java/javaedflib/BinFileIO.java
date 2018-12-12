@@ -304,7 +304,7 @@ byte[] version=new byte[8];
         int signalArraySize=0;
         ByteBuffer timeFrameBytes = ByteBuffer.allocate(length);
         timeFrameBytes.order(ByteOrder.LITTLE_ENDIAN);
-        float[] values = new float[length/2];
+        float[] values = new float[length/signalByteSize];
         timeFrameBytes=inputFile.ReadBytes(offset,length);
         for (int i=0; i<values.length; i++) {
             timeFrameBytes.get(bytes);
@@ -402,11 +402,12 @@ byte[] version=new byte[8];
     }
 
     private void setSignalByteSize() {
-        switch (fileType) {
-            case "EDF" : signalByteSize = 2;
+        switch (fileType.toUpperCase()) {
+            case "OPTIONAL[EDF]" : signalByteSize = 2;
                 break;
-            case "BDF" : signalByteSize = 3;
+            case "OPTIONAL[BDF]" : signalByteSize = 3;
                 break;
+
             default : signalByteSize = 2;
         }
     }
