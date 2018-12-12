@@ -24,7 +24,10 @@ class BinFileIO {
     }
 
     FileHeader ReadFileHeader() {
-
+/*
+* Reads BDF or EDF file header.
+* @return on instance of fileHeader
+* */
         ByteBuffer binHeader = inputFile.ReadBytes(0, 256);
 
         byte[] version = new byte[8];
@@ -50,7 +53,7 @@ class BinFileIO {
         binHeader.get(numberOfSignals);
 
         FileHeader fileHeader = new FileHeader();
-        fileHeader.setVersion(new String(version).trim());
+        fileHeader.setVersion(new String(version));
         fileHeader.setPatientInfo(new String(patientInfo).trim());
         fileHeader.setRecordingInfo(new String(recordingInfo).trim());
         fileHeader.setStartDate(new String(startDate).trim());
@@ -65,6 +68,11 @@ class BinFileIO {
     }
 
     Map<Integer, ChannelHeader> ReadChannelHeaders(int numberOfChannels) {
+        /*
+        * Reads channel headers' info from BDF or EDF file
+        * @param numberOfChannels Number of channels in file
+        * @return a map with channelNumber, ChannelHeader pairs.
+        * */
         Map<Integer, ChannelHeader> channelHeaders = new HashMap<>();
         ByteBuffer buffer = inputFile.ReadBytes(256, 256 * numberOfChannels);
 
@@ -140,6 +148,12 @@ class BinFileIO {
     }
 
     void WriteFileHeader(FileHeader fileHeader, String path) throws IOException {
+        /*
+        * Writes file header to a new file.
+        * @param: fileHeader
+        * @param: path file path to write header
+        * */
+
 byte[] version=new byte[8];
         if (fileHeader.getVersion().substring(1,8).contentEquals("BIOSEMI")){
     version[0]=(byte)-1;
@@ -148,7 +162,7 @@ byte[] version=new byte[8];
         version[1+ver]=bdfVersion[ver];
     }
 } else {
-    version = fileHeader.getVersion().getBytes();
+    version = fileHeader.getVersion().trim().getBytes();
 }
         byte[] patientInfo = fileHeader.getPatientInfo().getBytes();
         byte[] recordingInfo = fileHeader.getRecordingInfo().getBytes();
@@ -188,7 +202,11 @@ byte[] version=new byte[8];
     }
 
     void WriteChannelHeaders(Map<Integer, ChannelHeader> channelHeaders, String path) throws IOException {
-
+        /*
+         * Writes channel headers to a file.
+         * @param: channelHeaders   a map with integer, ChannelHeader pair
+         * @param: path             file path to write header
+         * */
         DecimalFormat formatter = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         formatter.setMaximumFractionDigits(340);
 
@@ -252,6 +270,13 @@ byte[] version=new byte[8];
     }
 
     void writeChannelData (float[] data, String path) throws IOException {
+
+        /*
+        * Write channel data to a file.
+        * @param data    array of float
+        * @param path    file path to write channel data
+        * */
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         byte[] binaryData = outputStream.toByteArray();
         outputFile = new BinFile(path);
@@ -259,7 +284,12 @@ byte[] version=new byte[8];
     }
 
     void writeAllChannelData (float[] data, String path) throws IOException {
-        byte[] binaryData = new byte[(data.length) * 2];
+        /*
+         * Write all channel data to a file.
+         * @param data    array of float
+         * @param path    file path to write channel data
+         * */
+        byte[] binaryData = new byte[(data.length)*getSignalDataLength()];
         int binaryDataPosition = 0;
         float actData;
         for (int dataPosition = 0; dataPosition < data.length; dataPosition++) {
@@ -277,6 +307,14 @@ byte[] version=new byte[8];
 
 
     float[] readChannelData(int sampleNumber, int offset, int timeFrame)  {
+        /*
+        * Reads one channel data.
+        * @param sampleNumber number of samples in the channel
+        * @param offset start position from beginning of the file
+        * @param timeFrame how many seconds need to read
+        * @return float array with digitized channel data
+        * */
+
         float value;
         byte[] bytes = new byte[signalByteSize];
         int length = sampleNumber * signalByteSize;
@@ -300,6 +338,12 @@ byte[] version=new byte[8];
     }
 
     float[] readTimeFrame(int offset, int length)  {
+        /*
+        * Get data from all channels with specified start position and specified length
+        * @param offset start position from beginning of the file
+        * @param length byte number to be read from start position
+        * @return float array with digitized channel data
+        * */
         byte[] bytes = new byte[signalByteSize];
         int signalArraySize=0;
         ByteBuffer timeFrameBytes = ByteBuffer.allocate(length);
@@ -316,6 +360,11 @@ byte[] version=new byte[8];
     }
 
     private float getSignalValue(byte[] bytes) {
+        /*
+        * Converts byte array data to digitized float signal depends on file format
+        * @param bytes byte array from file
+        * @return digitized signal value
+        * */
         float value;
         switch(signalByteSize) {
             case 2: // EDF format
@@ -413,6 +462,12 @@ byte[] version=new byte[8];
     }
 
     byte[] digitalSignalToBytes (float value, int signalByteSize){
+        /*
+        * Converts digitized signal value to byte array.
+        * @param value the digitized signal value
+        * @param signalByteSize depends on file format
+        * @return byte array
+        * */
         byte[] backBytes=new byte[signalByteSize];
 
         for (int b=signalByteSize-1;b>=0 ;b--) {

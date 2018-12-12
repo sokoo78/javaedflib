@@ -49,6 +49,10 @@ class DataBuffer {
     }
 
     void WriteFileHeader(String path) throws IOException {
+        /*
+        * Writes file header.
+        * @param path file path to be write for.
+        * */
         binFileIO.WriteFileHeader(fileHeader, path);
 
         Map<Integer, ChannelHeader> channelHeaders = new HashMap<>();
@@ -65,7 +69,10 @@ class DataBuffer {
 
     void readChannelData (int channelNumber, int startTimeSlot, int endTimeSlot) {
         /*
-        *
+        *Reads a channel data within a timeframe.
+        * @param channelNumber number of channel to be read.
+        * @param startTimeSlot starting second value.
+        * @param endTimeSlot ending second value. If 0, all timeslot will be read.
         * */
 
         int sampleNumber = channels.get(channelNumber).getNumberOfSamples();
@@ -85,6 +92,10 @@ class DataBuffer {
     }
 
     void printChannelData (int channelNumber) {
+        /*
+        * Print a channel data to console.
+        * @param channelNumber number of the channel to be print data for.
+        * */
         var signals = channels.get(channelNumber).getSignals();
         for (int signal = 0; signal < signals.length; signal++) {
             System.out.printf("%d. digital sample: %s | physical sample: %s%n", signal, signals[signal],
@@ -94,6 +105,12 @@ class DataBuffer {
     }
 
     void readAllChannelData (int startTimeSlot, int endTimeSlot) {
+        /*
+         *Reads all channel data within a timeframe.
+         * @param startTimeSlot starting second value.
+         * @param endTimeSlot ending second value. If 0, all timeslot will be read.
+         * */
+
         int i;
         int timeFrameDataOffset;
         int[] channelPos = new int[channels.size()];
@@ -123,16 +140,19 @@ class DataBuffer {
     }
 
     void writeAllChannelData(String path) throws  IOException {
+        /*
+        * Writes all channel data to a file.
+        * @param path File path to write channels' data for
+        * */
         try {
             float[] dataToWrite;
             int dataLength = 0;
             int position = 0;
             int timeSlot;
             for (int i = 0; i < channels.size(); i++) {
-                dataLength += channels.get(i).getNumberOfSamples();
+                dataLength += channels.get(i).getSignals().length;
             }
-            dataLength = dataLength * fileHeader.getNumberOfDataRecords() * binFileIO.getSignalDataLength();
-            //dataToWrite = new float[dataLength/2];
+
             dataToWrite = new float[dataLength];
             int[] channelPosition=new int[channels.size()];
             for (int cp=0; cp < channelPosition.length; cp++) {
@@ -162,6 +182,9 @@ class DataBuffer {
 
 
     void printAllChannelData () {
+        /*
+        * Prints all channel data to console.
+        * */
         byte[] bytes=new byte[binFileIO.getSignalDataLength()];
         for (int channel = 0; channel < channels.size(); channel++) {
             var signals = channels.get(channel).getSignals();

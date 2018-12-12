@@ -28,6 +28,12 @@ class Channel {
     }
 
     float[] getSignalsTimeFrame(int start, int length) {
+        /*
+        * gets signals within a specified timeframe.
+        * @param start starting second
+        * @param length data number to be get from starting point.
+        * @return returns a float array with signal data.
+        * */
         float[] retSignals=new float[length];
         for (int i=0;i<length; i++) {
             retSignals[i]=signals[start+i];
@@ -52,6 +58,10 @@ class Channel {
     }
 
     void addSignals(float[] plusSignals) {
+        /*
+        * adds signal data to existing channel.
+        * @param plusSignals float array with signals for add to existing channel
+        * */
         float[] newSignals = new float[this.signals.length + plusSignals.length];
         System.arraycopy(this.signals,0,newSignals,0,this.signals.length);
 
@@ -60,6 +70,11 @@ class Channel {
     }
 
     float sampleFromDigitalToPhysical (float digitalSignal) {
+        /*
+        * Converts signal to digital to physical value.
+        * @param digitalSignal signal in digital value
+        * @return returns signal in physical value
+        * */
        float value = (float) (this.channelHeader.getPhysicalMinimum()
                + (float) ((this.channelHeader.getPhysicalMaximum() - this.channelHeader.getPhysicalMinimum())
                * (digitalSignal - this.channelHeader.getDigitalMinimum()))
@@ -68,6 +83,12 @@ class Channel {
     }
 
     float sampleFromPhysicalToDigital (float physicalSignal) {
+        /*
+         * Converts signal to physical to digital value.
+         * @param physicalSignal signal in physical value
+         * @return returns signal in digital value
+         * */
+
         float value = (float) this.channelHeader.getDigitalMinimum()
                 + (((float)(this.channelHeader.getDigitalMaximum()-this.channelHeader.getDigitalMinimum()))
                 *(physicalSignal-(float) this.channelHeader.getPhysicalMinimum()))

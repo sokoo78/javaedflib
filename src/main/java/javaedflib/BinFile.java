@@ -16,6 +16,12 @@ class BinFile {
     }
 
     ByteBuffer ReadBytes(final long offset, int length) {
+        /*
+        * Reads bytes form file into a ByteBuffer.
+        * @param offset start position from beginning of the file
+        * @param length byte number to be read from start position
+        * @return returns byte buffer with data bytes
+        * */
         ByteBuffer byteBuffer = ByteBuffer.allocate(length);
         try (FileChannel fileChannel = new FileInputStream(path).getChannel().position(offset)) {
             fileChannel.read(byteBuffer);
@@ -27,6 +33,12 @@ class BinFile {
     }
 
     void WriteBytes(byte[] bytes, StandardOpenOption mode) {
+        /*
+        * Write bytes to a file.
+        * @param bytes byte array to be write
+        * @param mode open option (write, append, etc...)
+        * */
+
         try {
             if (!Files.exists(Paths.get(path)))
                 Files.createFile(Paths.get(path));
